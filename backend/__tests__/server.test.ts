@@ -1,8 +1,17 @@
+import dotenv from 'dotenv';
 import supertest from 'supertest';
 import app from '../src/app';
 import { Server } from 'http';
 import { logInTest } from '../src/utils/log-utils';
 import { beforeAll, describe, it, expect, afterAll } from '@jest/globals';
+
+// // Determine the environment
+// const environment = process.env.NODE_ENV;
+
+// // Load the corresponding .env file
+// dotenv.config({ path: `.env.${environment}` });
+
+// logInTest('Logging current environment: ', process.env.NODE_ENV);
 
 let server: Server;
 let TEST_PORT = 3001;
@@ -24,7 +33,6 @@ describe('Hello world test suite', () => {
   );
 
   it('should respond with 200 status code for GET / endpoint', async () => {
-    logInTest('Inside test');
     try {
       const response = await supertest(app).get('/');
       expect(response.status).toBe(200);
