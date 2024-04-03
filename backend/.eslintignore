@@ -1,0 +1,3 @@
+# .eslintignore
+__tests__/
+jest.config.ts

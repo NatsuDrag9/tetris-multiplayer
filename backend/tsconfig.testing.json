@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist-test",
+    "composite": true
+  },
+  "include": ["src", "__tests__", "eslintrc.json"],
+  "types": ["jest", "node"]
+}
