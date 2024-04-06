@@ -1,8 +1,8 @@
-import "./App.css";
-import { logInDev } from "@utils/log-utils";
+import './App.css';
+import { logInDev } from '@utils/log-utils';
 
 function App() {
-  logInDev("Logging app..");
+  logInDev('Logging app..');
 
   return <div className="app">Hello from app</div>;
 }

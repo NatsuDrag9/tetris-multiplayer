@@ -7,7 +7,10 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/components"],
+      "@styles/*": ["src/styles"]
     },
 
     /* Bundler mode */
@@ -24,6 +27,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", ".eslintrc.cjs"],
+  "include": [".eslintrc.cjs", "src", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
