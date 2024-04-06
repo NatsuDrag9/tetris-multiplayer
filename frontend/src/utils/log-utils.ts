@@ -6,8 +6,8 @@ type LogArgsType = unknown[];
 export const logInDev = (...message: LogArgsType): void => {
   if (import.meta.env.VITE_DEV_ENV === 'development') {
     console.log(
-      "%c∴ LOGGING IN DEV",
-      "font-family: monospace; font-size: 12px; color: green;",
+      '%c∴ LOGGING IN DEV',
+      'font-family: monospace; font-size: 12px; color: green;'
     );
     console.log(...message);
   }
@@ -16,8 +16,8 @@ export const logInDev = (...message: LogArgsType): void => {
 export const logErrorInDev = (error: LogArgsType): void => {
   if (import.meta.env.VITE_DEV_ENV === 'development') {
     console.log(
-      "%c∴ LOGGING ERROR IN DEV",
-      "font-family: monospace; font-size: 12px; color: red;",
+      '%c∴ LOGGING ERROR IN DEV',
+      'font-family: monospace; font-size: 12px; color: red;'
     );
     console.error(...error);
   }
