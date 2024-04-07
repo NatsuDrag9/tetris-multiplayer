@@ -1,0 +1,29 @@
+@import '@styles/main.scss';
+@import '@styles/mixins.scss';
+
+.game-button {
+  width: 100%;
+  //   height: 3.3vw;
+  height: auto;
+  text-transform: uppercase;
+  font-family: $font-family-game;
+  font-size: 0.85vw;
+  padding: 1.2vw 1.5vw;
+  transition: none;
+  //   border: 1px solid white;
+  border: transparent;
+
+  &:hover {
+    border: transparent;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  @media (max-width: $screen-width-800) {
+    font-size: 1.1vw;
+    padding: 2vw;
+    width: 36vw;
+  }
+}
