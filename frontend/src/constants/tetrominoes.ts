@@ -69,9 +69,4 @@ export const TETROMINOES: Tetrominoes = {
   },
 };
 
-export const getRandomTetromino = () => {
-  const tetrominoes = 'IJLOSTZ';
-  const randomTetrominoIndex =
-    tetrominoes[Math.floor(Math.random() * tetrominoes.length)];
-  return TETROMINOES[randomTetrominoIndex];
-};
+export const TETROMINO_IDENTIFIERS = 'IJLOSTZ';
