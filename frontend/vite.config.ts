@@ -13,6 +13,7 @@ export default defineConfig({
       '@pages': '/src/pages',
       '@fonts': 'src/fonts',
       '@constants': '/src/constants',
+      '@customTypes': '/src/customTypes',
     },
   },
 });

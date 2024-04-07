@@ -1,13 +1,4 @@
-type TetrominoShape = Array<Array<number | string>>;
-
-interface Tetromino {
-  shape: TetrominoShape;
-  color: string;
-}
-
-interface Tetrominoes {
-  [key: string]: Tetromino;
-}
+import { Tetrominoes } from '@customTypes/tetromonoTypes';
 
 export const TETROMINOES: Tetrominoes = {
   0: { shape: [[0]], color: '0, 0, 0' },

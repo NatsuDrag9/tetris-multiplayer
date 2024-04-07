@@ -13,7 +13,8 @@
       "@styles/*": ["src/styles/*"],
       "@pages/*": ["src/pages/*"],
       "@fonts/*": ["src/fonts/*"],
-      "@constants/*": ["src/constants/*"]
+      "@constants/*": ["src/constants/*"],
+      "@customTypes/*": ["src/customTypes/*"]
     },
 
     /* Bundler mode */
@@ -30,6 +31,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [".eslintrc.cjs", "src", "vite.config.ts"],
+  "include": [".eslintrc.cjs", "src", "vite.config.ts", "tests"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
