@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import { logInDev } from '@utils/log-utils';
 
 function App() {
