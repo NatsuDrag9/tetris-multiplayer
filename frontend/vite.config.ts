@@ -10,6 +10,8 @@ export default defineConfig({
       '@assets': '/src/assets',
       '@components': '/src/components',
       '@styles': '/src/styles',
+      '@pages': '/src/pages',
+      '@fonts': 'src/fonts',
     },
   },
 });

@@ -9,8 +9,10 @@
     "paths": {
       "@utils/*": ["src/utils/*"],
       "@assets/*": ["src/assets/*"],
-      "@components/*": ["src/components"],
-      "@styles/*": ["src/styles"]
+      "@components/*": ["src/components/*"],
+      "@styles/*": ["src/styles/*"],
+      "@pages/*": ["src/pages/*"],
+      "@fonts/*": ["src/fonts/*"]
     },
 
     /* Bundler mode */

@@ -1,10 +1,12 @@
 import './App.scss';
-import { logInDev } from '@utils/log-utils';
+import Home from '@pages/Home/Home';
 
 function App() {
-  logInDev('Logging app..');
-
-  return <div className="app">Hello from app</div>;
+  return (
+    <div className="app">
+      <Home />
+    </div>
+  );
 }
 
 export default App;

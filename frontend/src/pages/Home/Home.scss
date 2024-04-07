@@ -1,0 +1,12 @@
+@import '@styles/main.scss';
+@import '@styles/mixins.scss';
+
+.home {
+  width: 50vw;
+  height: 45vw;
+  border: 4px solid #333333;
+
+  &__title {
+    font-family: $font-family-intro;
+  }
+}
