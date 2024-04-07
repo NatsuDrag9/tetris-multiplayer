@@ -33,7 +33,7 @@
   }
 
   &__body {
-    border: 4px solid #333333;
+    border: 4px solid $theme-border-color;
     height: 35vw;
     width: 100%;
     display: flex;
