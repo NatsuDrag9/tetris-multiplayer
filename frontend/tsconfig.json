@@ -12,7 +12,8 @@
       "@components/*": ["src/components/*"],
       "@styles/*": ["src/styles/*"],
       "@pages/*": ["src/pages/*"],
-      "@fonts/*": ["src/fonts/*"]
+      "@fonts/*": ["src/fonts/*"],
+      "@constants/*": ["src/constants/*"]
     },
 
     /* Bundler mode */
