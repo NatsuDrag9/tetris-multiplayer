@@ -13,7 +13,7 @@ function Home() {
   return (
     <div className="home">
       <h3 className="home__title">
-        Welcome to Tetris Arcade. Select game mode
+        Welcome to Tetris Arcade. Select game mode:
       </h3>
       <div className="home__body">
         <button onClick={handleSinglePlayerClick}>Single Player</button>
