@@ -14,6 +14,7 @@ export default defineConfig({
       '@fonts': 'src/fonts',
       '@constants': '/src/constants',
       '@customTypes': '/src/customTypes',
+      '@hooks': '/src/hooks',
     },
   },
 });
