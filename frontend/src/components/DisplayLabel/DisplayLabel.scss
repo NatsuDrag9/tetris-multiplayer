@@ -23,6 +23,12 @@
     height: auto;
   }
 
+  &__content {
+    &.game-over {
+      color: red;
+    }
+  }
+
   @media (max-width: $screen-width-800) {
     font-size: 1vw;
     padding: 1.5vw;
