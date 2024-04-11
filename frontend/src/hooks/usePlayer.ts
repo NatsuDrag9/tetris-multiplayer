@@ -68,7 +68,8 @@ const usePlayer = (initialTetromino: TetrominoShape) => {
   }) => {
     setPlayer((prev) => ({
       ...prev,
-      pos: { x: prev.position.x + x, y: prev.position.y + y },
+      position: { x: prev.position.x + x, y: prev.position.y + y },
+      tetromino: prev.tetromino,
       collided,
     }));
   };
@@ -83,7 +84,12 @@ const usePlayer = (initialTetromino: TetrominoShape) => {
     });
   }, []);
 
-  return [player, updatePlayerPosition, resetPlayer, playerRotate];
+  return {
+    player,
+    updatePlayerPosition,
+    resetPlayer,
+    playerRotate,
+  };
 };
 
 export default usePlayer;

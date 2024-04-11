@@ -7,4 +7,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .game-area-wrapper {
+    transition: none;
+    background-color: transparent;
+    width: 62vw;
+    height: 72%; // To match the no. of rows in &__game;
+    margin: 0;
+    border: none;
+    cursor: default;
+  }
 }

@@ -8,9 +8,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 // eslint-disable-next-line implicit-arrow-linebreak
 const useGameStatus = (rowsCleared: number) => {
-  const [score, setScore] = useState(INITIAL_SCORE);
-  const [rows, setRows] = useState(INITAL_ROWS);
-  const [level, setLevel] = useState(INITIAL_LEVEL);
+  const [score, setScore] = useState<number>(INITIAL_SCORE);
+  const [rows, setRows] = useState<number>(INITAL_ROWS);
+  const [level, setLevel] = useState<number>(INITIAL_LEVEL);
 
   // Calculates the score
   const calculateScore = useCallback(() => {
@@ -25,7 +25,14 @@ const useGameStatus = (rowsCleared: number) => {
     calculateScore();
   }, [calculateScore, rowsCleared, score]);
 
-  return [score, setScore, rows, setRows, level, setLevel];
+  return {
+    score,
+    setScore,
+    rows,
+    setRows,
+    level,
+    setLevel,
+  };
 };
 
 export default useGameStatus;

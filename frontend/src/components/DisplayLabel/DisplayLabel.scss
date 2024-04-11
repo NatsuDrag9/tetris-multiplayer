@@ -7,7 +7,7 @@
   align-items: center;
   width: 90%;
   height: 3vw;
-  border: 4px solid $theme-border-color;
+  border: 0.3vw solid $theme-border-color;
   margin: 1vw 0;
   background-color: black;
   border-radius: 0.7vw;
@@ -26,6 +26,8 @@
   &__content {
     &.game-over {
       color: red;
+      text-align: center;
+      width: 100%;
     }
   }
 

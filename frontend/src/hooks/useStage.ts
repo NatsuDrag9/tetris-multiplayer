@@ -42,7 +42,7 @@ const useStage = (player: Player, resetPlayer: () => void) => {
           if (value !== 0) {
             // Prevents out-of-bounds due to continuous down arrow key presses
             newStage[y + player.position.y][x + player.position.x] = [
-              Number(value),
+              value,
               `${player.collided ? MERGE_CELL : CLEAR_CELL}`,
             ];
           }
@@ -60,7 +60,11 @@ const useStage = (player: Player, resetPlayer: () => void) => {
     setStage((prev) => updateStage(prev));
   }, [player, resetPlayer]);
 
-  return [stage, setStage, rowsCleared];
+  return {
+    stage,
+    setStage,
+    rowsCleared,
+  };
 };
 
 export default useStage;
