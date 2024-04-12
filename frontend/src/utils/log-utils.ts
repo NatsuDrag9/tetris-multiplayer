@@ -13,7 +13,7 @@ export const logInDev = (...message: LogArgsType): void => {
   }
 };
 
-export const logErrorInDev = (error: LogArgsType): void => {
+export const logErrorInDev = (...error: LogArgsType): void => {
   if (import.meta.env.VITE_DEV_ENV === 'development') {
     console.log(
       '%c∴ LOGGING ERROR IN DEV',
