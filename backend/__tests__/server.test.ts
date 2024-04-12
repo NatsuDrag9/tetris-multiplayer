@@ -4,6 +4,7 @@ import app from '../src/app';
 import { Server } from 'http';
 import { logInTest } from '../src/utils/log-utils';
 import { beforeAll, describe, it, expect, afterAll } from '@jest/globals';
+import WebSocket from 'ws';
 
 // // Determine the environment
 // const environment = process.env.NODE_ENV;
@@ -14,9 +15,10 @@ import { beforeAll, describe, it, expect, afterAll } from '@jest/globals';
 // logInTest('Logging current environment: ', process.env.NODE_ENV);
 
 let server: Server;
+let webSocketServer: WebSocket.Server;
 let TEST_PORT = 3001;
 
-describe('Hello world test suite', () => {
+describe('HTTP Server hello world test suite', () => {
   beforeAll(
     () =>
       new Promise<void>((resolve, reject) => {
@@ -45,6 +47,81 @@ describe('Hello world test suite', () => {
     server.close(() => {
       logInTest('Server closed after testing.');
       done();
+    });
+  });
+});
+
+describe('WebSocket server hello world test suite', () => {
+  beforeAll((done) => {
+    logInTest('Before all... ');
+
+    // Start the HTTP server
+    server = app
+      .listen(TEST_PORT, () => {
+        logInTest(`HTTP Server started and listening on ${TEST_PORT}`);
+
+        // Start the WebSocket server
+        webSocketServer = new WebSocket.Server({ server });
+
+        webSocketServer.on('connection', (ws) => {
+          logInTest('WebSocket connection established.');
+
+          // Handle WebSocket messages
+          ws.on('message', (message) => {
+            logInTest('Received WebSocket message (in buffer):', message);
+            logInTest(
+              'Received WebSocket message (in string):',
+              message.toString()
+            );
+            ws.send('Test message from server');
+          });
+        });
+
+        done();
+      })
+      .on('error', (err) => {
+        throw err;
+      });
+  });
+
+  it('should send and receive WebSocket messages', (done) => {
+    // Create a websocket client to connect to the websocket server
+    const webSocketClient = new WebSocket(`ws://localhost:${TEST_PORT}`);
+
+    webSocketClient.on('open', () => {
+      logInTest('WebSocket client connected');
+
+      // Send a test message to the WebSocket server
+      webSocketClient.send('Test message from client');
+    });
+
+    // Listen for messages from the WebSocket server
+    webSocketClient.on('message', (message) => {
+      logInTest('Received message from WebSocket server (in buffer):', message);
+      logInTest(
+        'Received message from WebSocket server (in string):',
+        message.toString()
+      );
+
+      // Verify that the message received matches the expected message
+      expect(message.toString()).toBe('Test message from server');
+
+      // Close the WebSocket connection after the test is complete
+      webSocketClient.close();
+      done();
+    });
+  });
+
+  afterAll((done) => {
+    // Close the HTTP server
+    server.close(() => {
+      logInTest('HTTP server closed after testing.');
+
+      // Close the WebSocket server
+      webSocketServer.close(() => {
+        logInTest('WebSocket server closed after testing.');
+        done();
+      });
     });
   });
 });

@@ -13,7 +13,7 @@ export const logInDev = (...message: LogArgsType): void => {
   }
 };
 
-export const logErrorInDev = (error: LogArgsType): void => {
+export const logErrorInDev = (...error: LogArgsType): void => {
   if (process.env.NODE_ENV === 'development') {
     console.log(
       '%c∴ LOGGING ERROR IN DEV',
