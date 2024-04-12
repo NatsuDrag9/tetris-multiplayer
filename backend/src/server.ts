@@ -16,7 +16,7 @@ logInDev('Logging current environment: ', process.env.NODE_ENV);
 const PORT = process.env.PORT || 3000;
 
 const httpServer: Server = app.listen(PORT, () => {
-  logInDev(`Server is running on port ${PORT}`);
+  logInDev(`HTTP Server is running on port ${PORT}`);
 });
 
 // Websocket Server
@@ -29,6 +29,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     logInDev('Received message:', message.toString());
     // Handle WebSocket message here
+    ws.send(`Received your message:  ${message.toString()}`);
   });
 
   // WebSocket close handler
