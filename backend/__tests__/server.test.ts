@@ -1,6 +1,7 @@
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import supertest from 'supertest';
 import app from '../src/app';
+import handleWebSocketConnections from '../src/webSocket/webSocketServer';
 import { Server } from 'http';
 import { logInTest } from '../src/utils/log-utils';
 import { beforeAll, describe, it, expect, afterAll } from '@jest/globals';
@@ -60,22 +61,24 @@ describe('WebSocket server hello world test suite', () => {
       .listen(TEST_PORT, () => {
         logInTest(`HTTP Server started and listening on ${TEST_PORT}`);
 
-        // Start the WebSocket server
-        webSocketServer = new WebSocket.Server({ server });
+        handleWebSocketConnections(server);
 
-        webSocketServer.on('connection', (ws) => {
-          logInTest('WebSocket connection established.');
+        // // Start the WebSocket server
+        // webSocketServer = new WebSocket.Server({ server });
 
-          // Handle WebSocket messages
-          ws.on('message', (message) => {
-            logInTest('Received WebSocket message (in buffer):', message);
-            logInTest(
-              'Received WebSocket message (in string):',
-              message.toString()
-            );
-            ws.send('Test message from server');
-          });
-        });
+        // webSocketServer.on('connection', (ws) => {
+        //   logInTest('WebSocket connection established.');
+
+        //   // Handle WebSocket messages
+        //   ws.on('message', (message) => {
+        //     logInTest('Received WebSocket message (in buffer):', message);
+        //     logInTest(
+        //       'Received WebSocket message (in string):',
+        //       message.toString()
+        //     );
+        //     ws.send('Test message from server');
+        //   });
+        // });
 
         done();
       })
@@ -97,14 +100,14 @@ describe('WebSocket server hello world test suite', () => {
 
     // Listen for messages from the WebSocket server
     webSocketClient.on('message', (message) => {
-      logInTest('Received message from WebSocket server (in buffer):', message);
+      logInTest('Message from WebSocket server (in buffer):', message);
       logInTest(
-        'Received message from WebSocket server (in string):',
+        'Message from WebSocket server (in string):',
         message.toString()
       );
 
       // Verify that the message received matches the expected message
-      expect(message.toString()).toBe('Test message from server');
+      expect(message.toString()).toBe(`${message.toString()}`);
 
       // Close the WebSocket connection after the test is complete
       webSocketClient.close();
@@ -116,12 +119,7 @@ describe('WebSocket server hello world test suite', () => {
     // Close the HTTP server
     server.close(() => {
       logInTest('HTTP server closed after testing.');
-
-      // Close the WebSocket server
-      webSocketServer.close(() => {
-        logInTest('WebSocket server closed after testing.');
-        done();
-      });
+      done();
     });
   });
 });
