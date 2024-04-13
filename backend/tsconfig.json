@@ -2,14 +2,18 @@
   "compilerOptions": {
     /* Other compiler options */
 
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
       "@utils/*": ["src/utils/*"],
       "@src/*": ["src/*"],
-      "@tests/*": ["__tests__/*"]
+      "@tests/*": ["__tests__/*"],
+      "@webSocket/*": ["src/webSocket/*"],
+      "@routes/*": ["src/routes/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@constants/*": ["src/constants/*"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
