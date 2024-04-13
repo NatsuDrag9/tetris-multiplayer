@@ -1,7 +1,11 @@
 import express from 'express';
 import getRandomCode from '@routes/getRandomCode';
+import serverMiddlewares from './middlewares/serverMiddlewares';
 
 const app = express();
+
+// Apply Middlewares
+serverMiddlewares(app);
 
 // Default - home route
 app.get('/', (req, res) => {
