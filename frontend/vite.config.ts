@@ -15,6 +15,7 @@ export default defineConfig({
       '@constants': '/src/constants',
       '@customTypes': '/src/customTypes',
       '@hooks': '/src/hooks',
+      '@services': '/src/services',
     },
   },
 });

@@ -19,7 +19,6 @@ import {
 } from '@constants/game';
 import useInterval from '@hooks/useInterval';
 import { KeyCode } from '@customTypes/gameTypes';
-import { logInDev } from '@utils/log-utils';
 
 function SinglePlayer() {
   const [dropTime, setDropTime] = useState<number | null>(null);

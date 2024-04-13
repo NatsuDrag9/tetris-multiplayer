@@ -8,7 +8,7 @@ function Home() {
   };
 
   const handleMultiPlayerClick = () => {
-    navigate('/multiplayer');
+    navigate('/multiplayer-lobby');
   };
   return (
     <div className="home">

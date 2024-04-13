@@ -2,11 +2,7 @@
 @import '@styles/mixins.scss';
 
 .single-player {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include game-layout;
 
   .game-area-wrapper {
     transition: none;

@@ -2,4 +2,5 @@
 @import '@styles/mixins.scss';
 
 .multi-player {
+  @include game-layout;
 }

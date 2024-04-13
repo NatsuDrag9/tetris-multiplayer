@@ -1,1 +1,9 @@
 @import '@styles/main.scss';
+
+@mixin game-layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,2 +1,30 @@
 @import '@styles/main.scss';
 @import '@styles/mixins.scss';
+
+.game-room {
+  width: 40%;
+  height: 72%;
+  border: 4px solid $theme-border-color;
+  display: flex;
+  flex-direction: column;
+  margin: 0 1vw;
+
+  .chat-window {
+    width: 100%;
+    height: 90%;
+    border-bottom: 4px solid $theme-border-color;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+  }
+
+  .input-container {
+    width: 100%;
+    height: 8%;
+    padding: 0.5vw;
+    input {
+      width: 80%;
+      height: 70%;
+      padding: 0.1vw 0.2vw;
+    }
+  }
+}

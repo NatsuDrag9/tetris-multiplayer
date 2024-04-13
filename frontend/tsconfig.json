@@ -15,7 +15,8 @@
       "@fonts/*": ["src/fonts/*"],
       "@constants/*": ["src/constants/*"],
       "@customTypes/*": ["src/customTypes/*"],
-      "@hooks/*": ["src/hooks/*"]
+      "@hooks/*": ["src/hooks/*"],
+      "@services/*": ["src/services/*"]
     },
 
     /* Bundler mode */
