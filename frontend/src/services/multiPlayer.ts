@@ -4,7 +4,6 @@ import ENDPOINTS from '@constants/apiEndpoints';
 
 const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
-// eslint-disable-next-line consistent-return
 const fetchRandomCode = async () => {
   try {
     const response = await axios.get(
@@ -13,6 +12,7 @@ const fetchRandomCode = async () => {
     return response.data;
   } catch (error) {
     logErrorInDev('Error generating code:', error);
+    throw error;
   }
 };
 
