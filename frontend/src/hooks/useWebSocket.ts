@@ -12,8 +12,12 @@ function useWebSocket() {
   };
 
   const onMessage = (event: MessageEvent) => {
-    const newMessage: WebSocketMessage = event.data;
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    try {
+      const newMessage: WebSocketMessage = JSON.parse(event.data);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    } catch (error) {
+      console.error('Error parsing WebSocket message:', error);
+    }
   };
 
   const onError = (error: Event) => {
@@ -36,9 +40,10 @@ function useWebSocket() {
     };
   }, [serverUrl]);
 
-  const sendMessage = (message: string) => {
+  const sendMessage = (message: WebSocketMessage) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(message);
+      // ws.send(message.body);
+      ws.send(JSON.stringify(message));
     }
   };
 

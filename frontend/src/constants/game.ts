@@ -20,3 +20,10 @@ export const KEY_CODE_UP = 38;
 
 // Scores taken from web
 export const LINE_POINTS = [40, 100, 300, 1200];
+
+// Web socket for multiplayer
+export const GameCommMode = {
+  CODE: 'CODE',
+  ENTER_CODE: 'ENTER_CODE',
+  JOIN_GAME_ROOM: 'JOIN_GAME_ROOM',
+};

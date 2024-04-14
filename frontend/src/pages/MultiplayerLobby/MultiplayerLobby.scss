@@ -2,37 +2,184 @@
 @import '@styles/mixins.scss';
 
 .multiplayer-lobby {
-  width: 62vw;
-  height: 72%;
+  width: 70vw;
+  height: 80%;
   border: 4px solid $theme-border-color;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  .generate-code {
-    border: none;
+  &__button {
+    border: 2px solid $theme-border-color;
     transition: none;
-    width: 10vw;
+    width: 15vw;
+    color: antiquewhite;
+    font-family: $font-family-game;
+
+    &:hover {
+      border: 2px solid $theme-border-color;
+    }
+
+    @media (max-width: $screen-width-800) {
+      width: 30vw;
+    }
   }
 
-  &__code-wrapper {
+  .intro {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    // justify-content: space-around;
+    font-family: $font-family-game;
+    font-size: 1vw;
+    padding: 1vw;
+
+    @media (max-width: $screen-width-800) {
+      height: 70%;
+      font-size: 1.5vw;
+      justify-content: space-between;
+      padding: 2vw;
+    }
+
+    &__title {
+      font-size: 1.5vw;
+      font-family: $font-family-intro;
+      color: antiquewhite;
+
+      @media (max-width: $screen-width-800) {
+        font-size: 2vw;
+        width: 80%;
+      }
+    }
+
+    &__entry-rules {
+      width: 80%;
+      height: 40%;
+      overflow-y: scroll;
+      scrollbar-width: thin;
+      // border: 1px solid white;
+
+      @media (max-width: $screen-width-800) {
+        height: 50%;
+      }
+
+      &__rule {
+        margin: 0.7vw 0;
+
+        @media (max-width: $screen-width-800) {
+          margin: 3vw 0;
+        }
+      }
+    }
+
+    &__generate-code {
+      width: 80%;
+      height: 30%;
+      // border: 1px solid red;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+
+      &__text {
+        margin: 1vw 0;
+        padding: 0;
+        height: 30%;
+      }
+
+      @media (max-width: $screen-width-800) {
+        font-size: 1.2vw;
+      }
+
+      &__button-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 0.7vw;
+
+        @media (max-width: $screen-width-800) {
+          font-size: 1vw;
+        }
+
+        .multiplayer-lobby__button {
+          width: 25vw;
+          height: 4vw;
+          transition: 0.1s ease-out;
+
+          &:hover {
+            transform: scale(1.05);
+            transition: 0.1s ease-in;
+          }
+        }
+      }
+    }
+  }
+
+  &__display {
     width: 50%;
-    height: 50%;
+    height: 80%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border: 1px solid white;
+    justify-content: center;
+    // border: 1px solid white;
+
+    @media (max-width: $screen-width-800) {
+      width: 90%;
+      height: 70%;
+    }
+
+    .code-wrapper,
+    .input-wrapper {
+      height: 50%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      // border: 1px solid red;
+      // @media (max-width: $screen-width-800) {
+      //   // width: 50%;
+      //   align-items: center;
+      //   justify-content: space-around;
+      // }
+    }
 
     .title {
       font-size: 1.3vw;
       font-family: $font-family-intro;
+      text-transform: uppercase;
+      text-align: center;
     }
 
     .code {
-      font-size: 2vw;
+      font-size: 2.5vw;
       text-align: center;
       color: antiquewhite;
+      // border: 1px solid red;
+    }
+
+    .input-wrapper {
+      justify-content: space-around;
+      align-items: center;
+      input {
+        border: 1px solid $theme-border-color;
+        background-color: black;
+        color: antiquewhite;
+        height: 4vw;
+        padding: 0.5vw;
+        border-radius: 1vw;
+        width: 70%;
+        font-size: 1.2vw;
+      }
+
+      .multiplayer-lobby__button {
+        font-size: 1vw;
+        height: 4vw;
+        width: 70%;
+      }
     }
   }
 }
