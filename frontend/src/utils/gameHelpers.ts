@@ -3,7 +3,7 @@
 
 import { CLEAR_CELL, STAGE_HEIGHT, STAGE_WIDTH } from '@constants/game';
 import { StageType } from '@customTypes/gameTypes';
-import { Player, PlayerPosition } from '@customTypes/playerTypes';
+import { Piece, PiecePosition } from '@customTypes/pieceTypes';
 
 // Representing an empty stage - a STAGE_HEIGHT X STAGE_WIDTH matrix
 // eslint-disable-next-line max-len
@@ -15,7 +15,7 @@ export const createStage = () =>
 // export const checkCollision = (
 //   player: Player,
 //   stage: StageType,
-//   { x: moveX, y: moveY }: PlayerPosition
+//   { x: moveX, y: moveY }: PiecePosition
 // ) => {
 //   for (let y = 0; y < player.tetromino.length; y += 1) {
 //     for (let x = 0; x < player.tetromino[y].length; x += 1) {
@@ -42,19 +42,19 @@ export const createStage = () =>
 // };
 
 export const checkCollision = (
-  player: Player,
+  piece: Piece,
   stage: StageType,
-  { x: moveX, y: moveY }: PlayerPosition
+  { x: moveX, y: moveY }: PiecePosition
 ) => {
-  for (let y = 0; y < player.tetromino.length; y += 1) {
-    for (let x = 0; x < player.tetromino[y].length; x += 1) {
+  for (let y = 0; y < piece.tetromino.length; y += 1) {
+    for (let x = 0; x < piece.tetromino[y].length; x += 1) {
       // Check that the cell is actually of a tetromino
-      if (player.tetromino[y][x] !== 0) {
+      if (piece.tetromino[y][x] !== 0) {
         // Checking for out-of-bounds
         // Check that our move is inside the game area's height and width
         // Check that the tetromino cell we're moving isn't set to CLEAR_CELL
-        const nextY = y + player.position.y + moveY;
-        const nextX = x + player.position.x + moveX;
+        const nextY = y + piece.position.y + moveY;
+        const nextX = x + piece.position.x + moveX;
         const isOutOfBounds = !stage[nextY] || !stage[nextY][nextX];
         const isOccupied =
           stage[nextY] &&

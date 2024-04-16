@@ -1,12 +1,12 @@
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
 
-export interface PlayerPosition {
+export interface PiecePosition {
   x: number;
   y: number;
 }
 
-export interface Player {
-  position: PlayerPosition;
+export interface Piece {
+  position: PiecePosition;
   tetromino: TetrominoShape;
   collided: boolean;
 }
