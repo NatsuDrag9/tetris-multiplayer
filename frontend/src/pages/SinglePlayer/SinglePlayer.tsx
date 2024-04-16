@@ -1,7 +1,6 @@
 import GameArea from '@components/GameArea/GameArea';
 import './SinglePlayer.scss';
-import { useEffect, useState } from 'react';
-import usePlayer from '@hooks/usePlayer';
+import { useEffect, useRef, useState } from 'react';
 import getRandomTetromino from '@utils/getRandomTetromino';
 import useStage from '@hooks/useStage';
 import useGameStatus from '@hooks/useGameStatus';
@@ -19,37 +18,45 @@ import {
 } from '@constants/game';
 import useInterval from '@hooks/useInterval';
 import { KeyCode } from '@customTypes/gameTypes';
+import usePiece from '@hooks/usePiece';
 
 function SinglePlayer() {
   const [dropTime, setDropTime] = useState<number | null>(null);
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [gamePaused, setGamePaused] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const { player, updatePlayerPosition, resetPlayer, playerRotate } = usePlayer(
+  const { piece, updatePiecePosition, resetPiece, pieceRotate } = usePiece(
     getRandomTetromino().shape
   );
-  const { stage, setStage, rowsCleared } = useStage(player, resetPlayer);
+  const { stage, setStage, rowsCleared } = useStage(piece, resetPiece);
   const { score, setScore, rows, setRows, level, setLevel } =
     useGameStatus(rowsCleared);
+  const gameAreaRef = useRef<HTMLDivElement>(null);
 
-  // Move the player if no collision occurs
-  const movePlayer = (direction: number) => {
-    const didCollide = checkCollision(player, stage, { x: direction, y: 0 });
+  // Move the piece if no collision occurs
+  const movePiece = (direction: number) => {
+    const didCollide = checkCollision(piece, stage, { x: direction, y: 0 });
     if (!didCollide) {
-      updatePlayerPosition({ x: direction, y: 0, collided: didCollide });
+      updatePiecePosition({ x: direction, y: 0, collided: didCollide });
     }
   };
 
   // Starts the game or resets the game when game over
   const startGame = () => {
+    // document.removeEventListener('keydown', move);
+
     setStage(createStage());
     setDropTime(BASE_DROP_TIME);
-    resetPlayer();
+    resetPiece();
     setGameOver(false);
     setScore(INITIAL_SCORE);
     setRows(INITAL_ROWS);
     setLevel(INITIAL_LEVEL);
     setGameStarted(true);
+    if (gameAreaRef.current) {
+      gameAreaRef.current.focus();
+    }
+    // document.addEventListener('keydown', move);
   };
 
   // Pauses the game
@@ -61,37 +68,42 @@ function SinglePlayer() {
   // Resumes the game
   const resumeGame = () => {
     setGamePaused(false);
-    setDropTime(BASE_DROP_TIME / (level + 1) + DROP_TIME_INCR);
+    // setDropTime(BASE_DROP_TIME / (level + 1) + DROP_TIME_INCR);
+    setDropTime(BASE_DROP_TIME / level);
+
+    if (gameAreaRef.current) {
+      gameAreaRef.current.focus();
+    }
   };
 
   // Logic to drop the tetromino
   const drop = () => {
     if (!gameOver && !gamePaused) {
-      // Increase level when player has cleared 10 rows
+      // Increase level when piece has cleared 10 rows
       if (rows > (level + 1) * 10) {
         setLevel((prev) => prev + 1);
         // Increase speed of tetromino fall
         setDropTime(1000 / (level + 1) + DROP_TIME_INCR);
       }
 
-      if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-        updatePlayerPosition({ x: 0, y: 1, collided: false });
+      if (!checkCollision(piece, stage, { x: 0, y: 1 })) {
+        updatePiecePosition({ x: 0, y: 1, collided: false });
       } else {
         // Game over when collision occurs at the top
-        if (player.position.y < 1) {
+        if (piece.position.y < 1) {
           setGameOver(true);
           setGameStarted(false);
           setDropTime(null);
         } else {
-          // Else the tetromino collided with the stage bounday
+          // Else the tetromino collided with the stage boundary
           // or/and other tetromino
-          updatePlayerPosition({ x: 0, y: 0, collided: true });
+          updatePiecePosition({ x: 0, y: 0, collided: true });
         }
       }
     }
   };
 
-  const dropPlayer = () => {
+  const dropPiece = () => {
     drop();
   };
 
@@ -100,18 +112,18 @@ function SinglePlayer() {
     if (!gameOver && !gamePaused) {
       if (keyCode === KEY_CODE_LEFT) {
         // Left arrow
-        // Moves the player to the left on x-axis
-        movePlayer(-1);
+        // Moves the piece to the left on x-axis
+        movePiece(-1);
       } else if (keyCode === KEY_CODE_RIGHT) {
         // Right arrow
-        // Moves the player to the right on x-axis
-        movePlayer(1);
+        // Moves the piece to the right on x-axis
+        movePiece(1);
       } else if (keyCode === KEY_CODE_DOWN) {
         // Down arrow
-        dropPlayer();
+        dropPiece();
       } else if (keyCode === KEY_CODE_UP) {
         // Up arrow
-        playerRotate(stage, 1);
+        pieceRotate(stage, 1);
       }
     }
   };
@@ -163,6 +175,8 @@ function SinglePlayer() {
         className="game-area-wrapper"
         onKeyDown={(e) => move(e)}
         onKeyUp={keyUp}
+        ref={gameAreaRef}
+        tabIndex={0}
       >
         <GameArea
           stage={stage}
