@@ -3,9 +3,9 @@
 
 .game-area {
   border: 0.3vw solid $theme-border-color;
-  width: 100%;
+  width: 95%;
   // height: 72%; // To match the no. of rows in &__games -- moved to game-area-wrapper
-  height: 100%;
+  height: 95%;
   display: flex;
   flex-direction: row;
   align-items: center;

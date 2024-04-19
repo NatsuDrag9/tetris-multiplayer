@@ -9,7 +9,8 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "no-case-declarations": "off"
   },
   "parserOptions": {
     "project": "./tsconfig.json"

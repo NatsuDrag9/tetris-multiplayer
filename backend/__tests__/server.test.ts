@@ -111,8 +111,8 @@ describe('WebSocket server hello world test suite', () => {
 
       // Close the WebSocket connection after the test is complete
       webSocketClient.close();
-      done();
     });
+    done();
   });
 
   afterAll((done) => {

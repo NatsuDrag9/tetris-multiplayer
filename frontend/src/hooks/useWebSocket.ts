@@ -1,4 +1,4 @@
-import { WebSocketMessage } from '@customTypes/webSocketTypes';
+import { WebSocketMessage } from '@customTypes/gameTypes';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
 import { useState, useEffect } from 'react';
 
@@ -16,7 +16,7 @@ function useWebSocket() {
       const newMessage: WebSocketMessage = JSON.parse(event.data);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     } catch (error) {
-      console.error('Error parsing WebSocket message:', error);
+      logErrorInDev('Error parsing WebSocket message:', error);
     }
   };
 

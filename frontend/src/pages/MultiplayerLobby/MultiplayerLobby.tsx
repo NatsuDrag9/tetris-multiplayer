@@ -6,36 +6,81 @@ import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import validateRoomCode from '@utils/validateRoomCode';
 import useWebSocket from '@hooks/useWebSocket';
-import { GameCommMode } from '@constants/game';
+import {
+  CommStatus,
+  CommStatusCheck,
+  MessageType,
+  NO_PLAYER,
+  NavigationCodes,
+  PLAYER_ONE,
+  PLAYER_TWO,
+} from '@constants/game';
+import { WebSocketMessage } from '@customTypes/gameTypes';
+import navigateToMultiplayer from '@utils/navigateToMultiplayer';
+import wsCommStatusCheck from '@utils/wsCommStatusCheck';
+import useGameRoom from '@hooks/useGameRoom';
+import toast, { Toaster } from 'react-hot-toast';
+import LoadingOverlay from 'react-loading-overlay-ts';
 
 function MultiplayerLobby() {
   const [code, setCode] = useState<string>('');
   const [enteredCode, setEnteredCode] = useState<string>('');
-  // const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { messages, sendMessage } = useWebSocket();
+  const { updateGameRoomDetails } = useGameRoom();
   const [generatesCode, setGeneratesCode] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Navigation for client that selects "GENERATE_CODE"
+    // Navigate player one (client that selects "GENERATE_CODE") to the game room
     logInDev(messages);
     messages.forEach((message) => {
-      if (message.type === GameCommMode.JOIN_GAME_ROOM) {
-        if (message.body === 'ready') {
-          navigate('/multiplayer');
+      if (message.isConnectedToServer) {
+        if (message.messageType === MessageType.BROADCAST_CODE) {
+          setCode(message.messageBody);
+        } else {
+          const navigationCheck = navigateToMultiplayer(message);
+          if (navigationCheck === NavigationCodes.YES) {
+            updateGameRoomDetails(
+              message.messageBody,
+              message.player === PLAYER_ONE ? code : enteredCode,
+              message.player
+            );
+            navigate('/multiplayer');
+          } else if (navigationCheck === NavigationCodes.NO) {
+            // Render a popup/message showing game room unavailable
+          } else {
+            // Render a popup/message displaying the error
+          }
         }
+      } else {
+        logErrorInDev('Lost communication with server');
       }
     });
-  }, [messages, generatesCode, navigate]);
+  }, [messages, navigate]);
 
   const generateRandomCode = async () => {
     setGeneratesCode(true);
-    // setLoading(true);
+    setLoading(true);
     try {
       const response = await fetchRandomCode();
       if (response) {
-        // toast.success('Got code');
-        sendMessage({ type: GameCommMode.CODE, body: response.code });
+        toast.success('Got code');
+        if (
+          wsCommStatusCheck(messages, NO_PLAYER) ===
+          CommStatusCheck.PLAYER_TO_BE_ASSIGNED
+        ) {
+          // Send a message only if this client is connected to the server
+          const playerOneMessage: WebSocketMessage = {
+            messageType: MessageType.BROADCAST_CODE,
+            isConnectedToServer: true,
+            messageBody: response.code,
+            player: PLAYER_ONE,
+            commStatus: CommStatus.IN_LOBBY,
+          };
+          sendMessage(playerOneMessage);
+        }
+
         setCode(response.code);
       }
     } catch (err) {
@@ -45,46 +90,59 @@ function MultiplayerLobby() {
             err.response.data.error ||
               'An error occurred when fetching the code'
           );
-          // toast.error(
-          //   err.response.data.error ||
-          //     'An error occurred when fetching the code'
-          // );
+          toast.error(
+            err.response.data.error ||
+              'An error occurred when fetching the code'
+          );
         }
       }
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
   const handleJoinGameRoom = () => {
     logInDev(enteredCode, code);
+    // Validate enteredCode
     const errorMessage = validateRoomCode(enteredCode, code);
 
     if (errorMessage) {
       logErrorInDev(errorMessage);
     } else {
-      // Navigation for client that selects "ENTER_CODE"
-      sendMessage({ type: GameCommMode.JOIN_GAME_ROOM, body: 'ready' });
-      navigate('/multiplayer');
+      // Send message on successful validation
+      const playerTwoMessage: WebSocketMessage = {
+        messageType: MessageType.READY_TO_JOIN_GAME_ROOM,
+        messageBody: enteredCode,
+        player: PLAYER_TWO,
+        commStatus: CommStatus.IN_LOBBY,
+        isConnectedToServer: true,
+      };
+      sendMessage(playerTwoMessage);
+      // navigate('/multiplayer');
     }
   };
 
   const handleEnterFriendCode = () => {
     setGeneratesCode(false);
-    messages.forEach((message) => {
-      if (message.type === GameCommMode.ENTER_CODE) {
-        setCode(message.body);
-      }
-    });
+    if (
+      wsCommStatusCheck(messages, NO_PLAYER) ===
+      CommStatusCheck.PLAYER_TO_BE_ASSIGNED
+    ) {
+      // Send a message only if this client is connected to the server
+      const playerTwoMessage: WebSocketMessage = {
+        messageType: MessageType.WAITING_FOR_CODE,
+        isConnectedToServer: true,
+        messageBody: 'Waiting for the code',
+        player: PLAYER_TWO,
+        commStatus: CommStatus.IN_LOBBY,
+      };
+      sendMessage(playerTwoMessage);
+    }
   };
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
 
   return (
     <div className="multiplayer-lobby">
-      {/* <Toaster /> */}
+      <Toaster />
       {/* {error && <div>{error}</div>} */}
       {generatesCode === null ? (
         <section className="intro">
@@ -140,10 +198,12 @@ function MultiplayerLobby() {
       ) : (
         <section className="multiplayer-lobby__display">
           {generatesCode === true ? (
-            <div className="code-wrapper">
-              <h3 className="title">Share this code with your friend!</h3>
-              <p className="code">{code}</p>
-            </div>
+            <LoadingOverlay active={loading} spinner>
+              <div className="code-wrapper">
+                <h3 className="title">Share this code with your friend!</h3>
+                <p className="code">{code}</p>
+              </div>
+            </LoadingOverlay>
           ) : code ? (
             <div className="input-wrapper">
               <h3 className="title">Enter friend's code</h3>
