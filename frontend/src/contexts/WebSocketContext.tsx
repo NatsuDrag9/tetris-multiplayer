@@ -1,5 +1,6 @@
 import { MessageType } from '@constants/game';
-import { WebSocketMessage } from '@customTypes/gameTypes';
+import { GameRoomDetails, WebSocketMessage } from '@customTypes/gameTypes';
+import getNumberAfterColon from '@utils/getNumberAfterColon';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
 import {
   ReactNode,
@@ -15,8 +16,9 @@ interface WebSocketContextValue {
   commMessages: WebSocketMessage[];
   errorMessages: WebSocketMessage[];
   gameMessages: WebSocketMessage[];
-  currentPlayer: string;
   setCurrentPlayer: (playerName: string) => void;
+  gameRoomDetails: GameRoomDetails | null;
+  updateGameRoomDetails: (messageBody: string, code: string) => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
@@ -44,7 +46,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   const [gameMessages, setGameMessages] = useState([] as WebSocketMessage[]);
   const [isConnectedToServer, setIsConnectedToServer] =
     useState<boolean>(false);
-  const [currentPlayer, setPlayer] = useState<string>('');
+  const [gameRoomDetails, setGameRoomDetails] =
+    useState<GameRoomDetails | null>(null);
 
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_WEB_SOCKET_URL;
@@ -98,11 +101,28 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   };
 
   const setCurrentPlayer = (playerName: string) => {
-    setPlayer(playerName);
+    setGameRoomDetails({
+      roomId: 0,
+      entryCode: '',
+      player: playerName,
+    });
   };
 
   const handleDisconnect = () => {
     setIsConnectedToServer(false);
+  };
+
+  const updateGameRoomDetails = (messageBody: string, code: string) => {
+    const roomId = getNumberAfterColon(messageBody);
+    if (roomId === null) {
+      logErrorInDev('Room id is null. Check Server.', roomId);
+      return;
+    }
+    setGameRoomDetails((prevValue: GameRoomDetails | null) => ({
+      roomId: roomId,
+      entryCode: code,
+      player: prevValue !== null ? prevValue.player : '',
+    }));
   };
 
   const contextValue: WebSocketContextValue = {
@@ -111,7 +131,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     errorMessages,
     commMessages,
     gameMessages,
-    currentPlayer,
+    gameRoomDetails,
+    updateGameRoomDetails,
     setCurrentPlayer,
   };
 

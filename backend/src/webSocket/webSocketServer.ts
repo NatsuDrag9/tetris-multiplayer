@@ -125,7 +125,7 @@ function handleCommunicationMessages(
                 messageType: MessageType.COMM_MESSAGE,
                 messageName: CommMessage.GAME_ROOM_ASSIGNED,
                 isConnectedToServer: true,
-                messageBody: `You are assigned game room ${gameRoomIdCounter}`,
+                messageBody: `You are assigned game room: ${gameRoomIdCounter}`,
                 player: PLAYER_TWO,
                 commStatus: CommStatus.IN_GAME_ROOM,
               })

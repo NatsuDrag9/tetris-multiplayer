@@ -7,7 +7,6 @@ import {
   MessageType,
   RETURN_HOME_TIMER,
 } from '@constants/game';
-import useGameRoom from '@hooks/useGameRoom';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { logInDev } from '@utils/log-utils';
 import { useNavigate } from 'react-router-dom';
@@ -17,9 +16,8 @@ import { Toaster } from 'react-hot-toast';
 function MultiPlayerGameRoom() {
   let homeTimerId: number = 0;
   const navigate = useNavigate();
-  const { isConnectedToServer, currentPlayer, errorMessages, sendMessage } =
+  const { isConnectedToServer, gameRoomDetails, errorMessages, sendMessage } =
     useWebSocketContext();
-  const { gameRoomDetails } = useGameRoom();
 
   useEffect(() => {
     // Send a message when inside game room
@@ -39,8 +37,8 @@ function MultiPlayerGameRoom() {
         player: gameRoomDetails.player,
         commStatus: CommStatus.IN_GAME_ROOM,
       });
+      logInDev('Game Room Details: ', gameRoomDetails);
     }
-    logInDev('Current player is: ', currentPlayer);
 
     return () => {
       clearTimeout(homeTimerId);

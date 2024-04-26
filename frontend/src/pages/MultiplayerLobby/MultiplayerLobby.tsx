@@ -19,7 +19,6 @@ import {
 import { WebSocketMessage } from '@customTypes/gameTypes';
 import navigateToMultiplayer from '@utils/navigateToMultiplayer';
 import wsCommStatusCheck from '@utils/wsCommStatusCheck';
-import useGameRoom from '@hooks/useGameRoom';
 import toast, { Toaster } from 'react-hot-toast';
 import LoadingOverlay from 'react-loading-overlay-ts';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
@@ -37,8 +36,8 @@ function MultiplayerLobby() {
     errorMessages,
     sendMessage,
     setCurrentPlayer,
+    updateGameRoomDetails,
   } = useWebSocketContext();
-  const { updateGameRoomDetails } = useGameRoom();
   const [generatesCode, setGeneratesCode] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -55,8 +54,7 @@ function MultiplayerLobby() {
         if (navigationCheck === NavigationCodes.YES) {
           updateGameRoomDetails(
             message.messageBody,
-            message.player === PLAYER_ONE ? code : enteredCode,
-            message.player
+            message.player === PLAYER_ONE ? code : enteredCode
           );
           navigate('/multiplayer');
         } else if (navigationCheck === NavigationCodes.NO) {
