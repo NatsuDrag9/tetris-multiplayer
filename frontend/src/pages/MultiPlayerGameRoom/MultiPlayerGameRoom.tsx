@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import {
   CommMessage,
   CommStatus,
-  ErrorMessage,
   MessageType,
   RETURN_HOME_TIMER,
 } from '@constants/game';
@@ -42,6 +41,10 @@ function MultiPlayerGameRoom() {
       });
     }
     logInDev('Current player is: ', currentPlayer);
+
+    return () => {
+      clearTimeout(homeTimerId);
+    };
   }, [errorMessages, isConnectedToServer]);
 
   const returnToHome = () => {
