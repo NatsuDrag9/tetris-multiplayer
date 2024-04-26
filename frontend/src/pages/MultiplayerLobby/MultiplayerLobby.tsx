@@ -1,5 +1,5 @@
 import './MultiplayerLobby.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
 import fetchRandomCode from '@services/multiPlayer';
 import { AxiosError } from 'axios';
@@ -39,6 +39,11 @@ function MultiplayerLobby() {
     updateGameRoomDetails,
   } = useWebSocketContext();
   const [generatesCode, setGeneratesCode] = useState<boolean | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     // Navigate player one (client that selects "GENERATE_CODE") to the game room
@@ -192,6 +197,12 @@ function MultiplayerLobby() {
     }
   };
 
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleJoinGameRoom();
+    }
+  };
+
   return (
     <div className="multiplayer-lobby">
       <Toaster />
@@ -264,6 +275,8 @@ function MultiplayerLobby() {
                 placeholder="Enter friend's code"
                 value={enteredCode}
                 onChange={(e) => setEnteredCode(e.target.value)}
+                ref={inputRef}
+                onKeyDown={handleKeyPress}
               />
               <button
                 className="multiplayer-lobby__button"
