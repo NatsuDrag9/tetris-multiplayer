@@ -65,8 +65,8 @@ export const MAX_GAME_ROOMS = 5;
 
 export const MAX_TURNS = 10;
 
-export const TURN_TIMER = 3 * 10000; // Wait for 30 sec (in ms)
+export const TURN_TIMER = 30 * 1000; // Wait for 30 sec (in ms)
 
-export const CLIENT_ACKNOWLEDGMENT_TIMEOUT = 6 * 10000; // Wait for 1 min (in ms)
+export const CLIENT_ACKNOWLEDGMENT_TIMEOUT = 180 * 1000; // Wait for 3 min (in ms)
 
 export default CODE_LENGTH;
