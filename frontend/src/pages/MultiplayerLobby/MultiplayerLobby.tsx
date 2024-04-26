@@ -9,7 +9,6 @@ import {
   CommMessage,
   CommStatus,
   CommStatusCheck,
-  ErrorMessage,
   MessageType,
   NO_PLAYER,
   NavigationCodes,
@@ -39,7 +38,6 @@ function MultiplayerLobby() {
     sendMessage,
     setCurrentPlayer,
   } = useWebSocketContext();
-  // const { messages, sendMessage } = useWebSocket();
   const { updateGameRoomDetails } = useGameRoom();
   const [generatesCode, setGeneratesCode] = useState<boolean | null>(null);
 
@@ -50,19 +48,6 @@ function MultiplayerLobby() {
       wsErrorMessageHandler(errorMessages, returnToHome);
     }
     commMessages.forEach((message) => {
-      // if (message.messageType === MessageType.DISCONNECTED) {
-      //   // toast.error(`${message.messageBody} Returning to home page.`);
-      //   // setLoading(true);
-      //   // returnToHome();
-      //   handleDisconnect();
-      // } else
-      // if (!isConnectedToServer) {
-      //   logErrorInDev('Lost communication with server');
-      //   toast.error(`${message.messageBody} Returning to home`);
-      //   setLoading(true);
-      //   returnToHome();
-      // }
-
       if (message.messageName === CommMessage.BROADCAST_CODE) {
         setCode(message.messageBody);
       } else {
@@ -111,7 +96,7 @@ function MultiplayerLobby() {
     try {
       const response = await fetchRandomCode();
       if (response) {
-        toast.success('Got code');
+        toast.success('Successfully generated code');
         const commStatusCheck = wsCommStatusCheck(
           commMessages,
           NO_PLAYER,
@@ -130,6 +115,8 @@ function MultiplayerLobby() {
           sendMessage(playerOneMessage);
           setCode(response.code);
           setCurrentPlayer(PLAYER_ONE);
+          // Start a 120 sec timer here. If PLAYER_TWO fails to enter the code within 120 sec,
+          // ask PLAYER_ONE to regenerate code
         } else if (
           commStatusCheck === CommStatusCheck.PLAYER_ONE_IS_DISCONNECTED
         ) {
@@ -176,7 +163,6 @@ function MultiplayerLobby() {
         isConnectedToServer: true,
       };
       sendMessage(playerTwoMessage);
-      // navigate('/multiplayer');
     }
   };
 

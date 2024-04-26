@@ -1,4 +1,4 @@
-import { ErrorMessage, MessageType, RETURN_HOME_TIMER } from '@constants/game';
+import { MessageType } from '@constants/game';
 import { WebSocketMessage } from '@customTypes/gameTypes';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
 import {
@@ -8,7 +8,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface WebSocketContextValue {
   isConnectedToServer: boolean;
@@ -46,7 +45,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   const [isConnectedToServer, setIsConnectedToServer] =
     useState<boolean>(false);
   const [currentPlayer, setPlayer] = useState<string>('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_WEB_SOCKET_URL;
