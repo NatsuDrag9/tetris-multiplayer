@@ -5,6 +5,7 @@ export interface Player {
   score: number;
   turnsRemaining: number;
   penalties: number;
+  tunrTimer: number;
 }
 
 export interface GameRoom {
@@ -17,6 +18,7 @@ export interface GameRoom {
 
 export interface WebSocketMessage {
   messageType: string;
+  messageName: string;
   isConnectedToServer: boolean;
   messageBody: string;
   player: string;

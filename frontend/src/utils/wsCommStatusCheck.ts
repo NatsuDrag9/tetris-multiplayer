@@ -6,46 +6,57 @@ import {
 } from '@constants/game';
 import { WebSocketMessage } from '@customTypes/gameTypes';
 
-function wsCommStatusCheck(messages: WebSocketMessage[], player: string) {
-  if (player === PLAYER_ONE) {
+function wsCommStatusCheck(
+  messages: WebSocketMessage[],
+  player: string,
+  connectedToServer: boolean
+  // navigateTo: () => void
+) {
+  let commStatus = CommStatusCheck.MESSAGE_DOES_NOT_EXIST;
+  // const timeoutId = setTimeout(() => {
+  //   // Handle timeout event
+  //   logErrorInDev('Server did not respond. Returning to home');
+  //   // navigateTo();
+  // }, SERVER_ACKNOWLEDGMENT_TIMEOUT);
+  if (connectedToServer && player === PLAYER_ONE) {
     if (
       messages.findIndex(
         (message) =>
-          message.isConnectedToServer &&
           message.commStatus === CommStatus.IN_LOBBY &&
           message.player === player
       ) !== -1
     ) {
-      return CommStatusCheck.PLAYER_ONE_IS_CONNECTED;
+      // clearTimeout(timeoutId);
+      commStatus = CommStatusCheck.PLAYER_ONE_IS_CONNECTED;
     }
-    return CommStatusCheck.PLAYER_ONE_IS_DISCONNECTED;
+  } else {
+    commStatus = CommStatusCheck.PLAYER_ONE_IS_DISCONNECTED;
   }
-  if (player === PLAYER_TWO) {
+  if (connectedToServer && player === PLAYER_TWO) {
     if (
       messages.findIndex(
         (message) =>
-          message.isConnectedToServer &&
           message.commStatus === CommStatus.IN_LOBBY &&
           message.player === player
       ) !== -1
     ) {
-      return CommStatusCheck.PLAYER_TWO_IS_CONNECTED;
+      // clearTimeout(timeoutId);
+      commStatus = CommStatusCheck.PLAYER_TWO_IS_CONNECTED;
     }
-    return CommStatusCheck.PLAYER_TWO_IS_DISCONNECTED;
+  } else {
+    commStatus = CommStatusCheck.PLAYER_TWO_IS_DISCONNECTED;
   }
-  if (player === '') {
+  if (connectedToServer && player === '') {
     if (
       messages.findIndex(
-        (message) =>
-          message.isConnectedToServer &&
-          message.commStatus === CommStatus.IN_LOBBY
+        (message) => message.commStatus === CommStatus.IN_LOBBY
       ) !== -1
     ) {
-      return CommStatusCheck.PLAYER_TO_BE_ASSIGNED;
+      commStatus = CommStatusCheck.PLAYER_TO_BE_ASSIGNED;
     }
   }
 
-  return CommStatusCheck.MESSAGE_DOES_NOT_EXIST;
+  return commStatus;
 }
 
 export default wsCommStatusCheck;

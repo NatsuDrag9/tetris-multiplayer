@@ -6,6 +6,7 @@ export interface KeyCode {
 
 export interface WebSocketMessage {
   messageType: string;
+  messageName: string;
   isConnectedToServer: boolean;
   messageBody: string;
   player: string;

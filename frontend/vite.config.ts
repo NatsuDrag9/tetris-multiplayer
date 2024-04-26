@@ -13,6 +13,7 @@ export default defineConfig({
       '@pages': '/src/pages',
       '@fonts': 'src/fonts',
       '@constants': '/src/constants',
+      '@contexts': '/src/contexts',
       '@customTypes': '/src/customTypes',
       '@hooks': '/src/hooks',
       '@services': '/src/services',

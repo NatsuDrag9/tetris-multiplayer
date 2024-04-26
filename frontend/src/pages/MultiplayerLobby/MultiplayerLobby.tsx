@@ -5,15 +5,17 @@ import fetchRandomCode from '@services/multiPlayer';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import validateRoomCode from '@utils/validateRoomCode';
-import useWebSocket from '@hooks/useWebSocket';
 import {
+  CommMessage,
   CommStatus,
   CommStatusCheck,
+  ErrorMessage,
   MessageType,
   NO_PLAYER,
   NavigationCodes,
   PLAYER_ONE,
   PLAYER_TWO,
+  RETURN_HOME_TIMER,
 } from '@constants/game';
 import { WebSocketMessage } from '@customTypes/gameTypes';
 import navigateToMultiplayer from '@utils/navigateToMultiplayer';
@@ -21,43 +23,87 @@ import wsCommStatusCheck from '@utils/wsCommStatusCheck';
 import useGameRoom from '@hooks/useGameRoom';
 import toast, { Toaster } from 'react-hot-toast';
 import LoadingOverlay from 'react-loading-overlay-ts';
+import { useWebSocketContext } from '@contexts/WebSocketContext';
+import wsErrorMessageHandler from '@utils/wsErrorMessageHandler';
 
 function MultiplayerLobby() {
+  let homeTimerId: number = 0;
   const [code, setCode] = useState<string>('');
   const [enteredCode, setEnteredCode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { messages, sendMessage } = useWebSocket();
+  const {
+    isConnectedToServer,
+    commMessages,
+    errorMessages,
+    sendMessage,
+    setCurrentPlayer,
+  } = useWebSocketContext();
+  // const { messages, sendMessage } = useWebSocket();
   const { updateGameRoomDetails } = useGameRoom();
   const [generatesCode, setGeneratesCode] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Navigate player one (client that selects "GENERATE_CODE") to the game room
-    logInDev(messages);
-    messages.forEach((message) => {
-      if (message.isConnectedToServer) {
-        if (message.messageType === MessageType.BROADCAST_CODE) {
-          setCode(message.messageBody);
-        } else {
-          const navigationCheck = navigateToMultiplayer(message);
-          if (navigationCheck === NavigationCodes.YES) {
-            updateGameRoomDetails(
-              message.messageBody,
-              message.player === PLAYER_ONE ? code : enteredCode,
-              message.player
-            );
-            navigate('/multiplayer');
-          } else if (navigationCheck === NavigationCodes.NO) {
-            // Render a popup/message showing game room unavailable
-          } else {
-            // Render a popup/message displaying the error
-          }
-        }
+    logInDev(commMessages, errorMessages);
+    if (!isConnectedToServer) {
+      wsErrorMessageHandler(errorMessages, returnToHome);
+    }
+    commMessages.forEach((message) => {
+      // if (message.messageType === MessageType.DISCONNECTED) {
+      //   // toast.error(`${message.messageBody} Returning to home page.`);
+      //   // setLoading(true);
+      //   // returnToHome();
+      //   handleDisconnect();
+      // } else
+      // if (!isConnectedToServer) {
+      //   logErrorInDev('Lost communication with server');
+      //   toast.error(`${message.messageBody} Returning to home`);
+      //   setLoading(true);
+      //   returnToHome();
+      // }
+
+      if (message.messageName === CommMessage.BROADCAST_CODE) {
+        setCode(message.messageBody);
       } else {
-        logErrorInDev('Lost communication with server');
+        const navigationCheck = navigateToMultiplayer(message);
+        if (navigationCheck === NavigationCodes.YES) {
+          updateGameRoomDetails(
+            message.messageBody,
+            message.player === PLAYER_ONE ? code : enteredCode,
+            message.player
+          );
+          navigate('/multiplayer');
+        } else if (navigationCheck === NavigationCodes.NO) {
+          // Render a popup/message showing game room unavailable
+          toast(
+            `No game room is available. Please try again later! \n\n Returning to home page.`
+          );
+          setLoading(true);
+          returnToHome();
+        }
+        //  else if (navigationCheck === NavigationCodes.ERR) {
+        //   // Render a popup/message displaying the error
+        //   toast.error(
+        //     `An error occurred when assigning game room.\n\n Returning to home page.`
+        //   );
+        //   setLoading(true);
+        // returnToHome();
+        // }
       }
     });
-  }, [messages, navigate]);
+
+    return () => {
+      clearTimeout(homeTimerId);
+    };
+  }, [commMessages, errorMessages, navigate, isConnectedToServer]);
+
+  const returnToHome = () => {
+    homeTimerId = setTimeout(() => {
+      navigate('/home');
+    }, RETURN_HOME_TIMER);
+    setLoading(false);
+  };
 
   const generateRandomCode = async () => {
     setGeneratesCode(true);
@@ -66,22 +112,33 @@ function MultiplayerLobby() {
       const response = await fetchRandomCode();
       if (response) {
         toast.success('Got code');
-        if (
-          wsCommStatusCheck(messages, NO_PLAYER) ===
-          CommStatusCheck.PLAYER_TO_BE_ASSIGNED
-        ) {
+        const commStatusCheck = wsCommStatusCheck(
+          commMessages,
+          NO_PLAYER,
+          isConnectedToServer
+        );
+        if (commStatusCheck === CommStatusCheck.PLAYER_TO_BE_ASSIGNED) {
           // Send a message only if this client is connected to the server
           const playerOneMessage: WebSocketMessage = {
-            messageType: MessageType.BROADCAST_CODE,
+            messageType: MessageType.COMM_MESSAGE,
+            messageName: CommMessage.BROADCAST_CODE,
             isConnectedToServer: true,
             messageBody: response.code,
             player: PLAYER_ONE,
             commStatus: CommStatus.IN_LOBBY,
           };
           sendMessage(playerOneMessage);
+          setCode(response.code);
+          setCurrentPlayer(PLAYER_ONE);
+        } else if (
+          commStatusCheck === CommStatusCheck.PLAYER_ONE_IS_DISCONNECTED
+        ) {
+          toast.error('You are not connected to the server. Returning to home');
+          returnToHome();
+        } else if (commStatusCheck === CommStatusCheck.MESSAGE_DOES_NOT_EXIST) {
+          toast.error('Server did not respond. Returning to home');
+          returnToHome();
         }
-
-        setCode(response.code);
       }
     } catch (err) {
       if (err instanceof AxiosError) {
@@ -111,7 +168,8 @@ function MultiplayerLobby() {
     } else {
       // Send message on successful validation
       const playerTwoMessage: WebSocketMessage = {
-        messageType: MessageType.READY_TO_JOIN_GAME_ROOM,
+        messageType: MessageType.COMM_MESSAGE,
+        messageName: CommMessage.READY_TO_JOIN_GAME_ROOM,
         messageBody: enteredCode,
         player: PLAYER_TWO,
         commStatus: CommStatus.IN_LOBBY,
@@ -124,19 +182,29 @@ function MultiplayerLobby() {
 
   const handleEnterFriendCode = () => {
     setGeneratesCode(false);
-    if (
-      wsCommStatusCheck(messages, NO_PLAYER) ===
-      CommStatusCheck.PLAYER_TO_BE_ASSIGNED
-    ) {
+    const commStatusCheck = wsCommStatusCheck(
+      commMessages,
+      NO_PLAYER,
+      isConnectedToServer
+    );
+    if (commStatusCheck === CommStatusCheck.PLAYER_TO_BE_ASSIGNED) {
       // Send a message only if this client is connected to the server
       const playerTwoMessage: WebSocketMessage = {
-        messageType: MessageType.WAITING_FOR_CODE,
+        messageType: MessageType.COMM_MESSAGE,
+        messageName: CommMessage.WAITING_FOR_CODE,
         isConnectedToServer: true,
         messageBody: 'Waiting for the code',
         player: PLAYER_TWO,
         commStatus: CommStatus.IN_LOBBY,
       };
       sendMessage(playerTwoMessage);
+      setCurrentPlayer(PLAYER_TWO);
+    } else if (commStatusCheck === CommStatusCheck.PLAYER_TWO_IS_DISCONNECTED) {
+      toast.error('You are not connected to the server. Returning to home');
+      returnToHome();
+    } else if (commStatusCheck === CommStatusCheck.MESSAGE_DOES_NOT_EXIST) {
+      toast.error('Server did not respond. Returning to home');
+      returnToHome();
     }
   };
 

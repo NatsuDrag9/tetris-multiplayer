@@ -39,11 +39,20 @@ export const CommStatus = {
 };
 
 export const MessageType = {
+  COMM_MESSAGE: 'COMMUNICATION_MESSAGE',
+  GAME_MESSAGE: 'GAME_MESSAGE',
+  ERROR_MESSAGE: 'ERROR_MESSAGE',
+};
+
+export const CommMessage = {
   // Client message types
   WAITING_FOR_CODE: 'WAITING_FOR_CODE', // Only sent by PLAYER_TWO
   BROADCAST_CODE: 'BROADCAST_CODE', // Only sent by PLAYER_ONE
   READY_TO_JOIN_GAME_ROOM: 'READY_TO_JOIN_GAME_ROOM', // Only sent by PLAYER_TWO
   JOINED_GAME_ROOM: 'JOINED_GAME_ROOM',
+
+  // Message types common to server and client
+  DISCONNECTED: 'DISCONNECTED',
 
   // Server message types
   READY_TO_SERVE: 'READY_TO_SERVE', // Server sends when a new client connects
@@ -51,6 +60,11 @@ export const MessageType = {
   GAME_ROOM_UNAVAILABLE: 'GAME_ROOM_UNAVAILABLE',
   GAME_OVER: 'GAME_OVER',
   PLAY_GAME: 'PLAY_GAME', // Server sends to the client who entered game room
+};
+export const GameMessage = {};
+export const ErrorMessage = {
+  CLIENT_TIMEOUT_ERROR: 'CLIENT_TIMEOUT_ERROR',
+  COMM_ERROR: 'COMMUNICATION_ERROR',
 };
 
 export const PLAYER_ONE = 'PLAYER_ONE';
@@ -71,3 +85,7 @@ export const CommStatusCheck = {
   PLAYER_TO_BE_ASSIGNED: 2,
   MESSAGE_DOES_NOT_EXIST: -1,
 };
+
+export const RETURN_HOME_TIMER = 2000; // in ms
+
+export const SERVER_ACKNOWLEDGMENT_TIMEOUT = 5000; // in ms
