@@ -60,7 +60,7 @@ function MultiplayerLobby() {
         } else if (navigationCheck === NavigationCodes.NO) {
           // Render a popup/message showing game room unavailable
           toast(
-            `No game room is available. Please try again later! \n\n Returning to home page.`
+            ` ${message.messageBody} Please try again later! \n\n Returning to home page.`
           );
           setLoading(true);
           returnToHome();

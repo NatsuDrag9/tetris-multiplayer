@@ -140,12 +140,16 @@ function handleCommunicationMessages(
           }
         } else if (matchedPlayerOne) {
           // Send a message of type GAME_ROOM_UNAVAILABLE to PLAYER_ONE
+          logInDev(
+            'Sending no game room available to matched player one: ',
+            matchedPlayerOne.code
+          );
           matchedPlayerOne.wsClient.send(
             JSON.stringify({
-              MessageType: MessageType.COMM_MESSAGE,
+              messageType: MessageType.COMM_MESSAGE,
               messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
               isConnectedToServer: true,
-              messageBody: `No game room available at the moment.`,
+              messageBody: 'No game room available at the moment.',
               player: PLAYER_ONE,
               commStatus: CommStatus.IN_LOBBY,
             })
@@ -157,7 +161,7 @@ function handleCommunicationMessages(
               messageType: MessageType.COMM_MESSAGE,
               messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
               isConnectedToServer: true,
-              messageBody: `No game room available at the moment.`,
+              messageBody: 'No game room available at the moment.',
               player: PLAYER_TWO,
               commStatus: CommStatus.IN_LOBBY,
             })
