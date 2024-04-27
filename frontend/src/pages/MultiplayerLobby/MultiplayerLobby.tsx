@@ -84,14 +84,16 @@ function MultiplayerLobby() {
       }
     });
 
-    return () => {
-      clearTimeout(homeTimerId);
-    };
+    // return () => {
+    //   clearTimeout(homeTimerId);
+    // };
   }, [commMessages, errorMessages, navigate, isConnectedToServer]);
 
   const returnToHome = () => {
+    clearTimeout(homeTimerId);
     homeTimerId = setTimeout(() => {
       navigate('/home');
+      window.location.reload();
     }, RETURN_HOME_TIMER);
     setLoading(false);
   };
