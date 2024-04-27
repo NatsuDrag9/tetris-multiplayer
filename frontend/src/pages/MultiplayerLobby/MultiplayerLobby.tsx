@@ -243,7 +243,7 @@ function MultiplayerLobby() {
     );
   };
 
-  const handleHomeNavigation = () => {
+  const handleNavigateToHome = () => {
     navigate('/home');
   };
 
@@ -335,7 +335,7 @@ function MultiplayerLobby() {
               </p>
               <button
                 className="multiplayer-lobby__button home"
-                onClick={handleHomeNavigation}
+                onClick={handleNavigateToHome}
               >
                 Home
               </button>
