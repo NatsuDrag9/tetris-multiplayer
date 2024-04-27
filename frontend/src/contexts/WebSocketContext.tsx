@@ -1,6 +1,6 @@
 import { MessageType } from '@constants/game';
 import { GameRoomDetails, WebSocketMessage } from '@customTypes/gameTypes';
-import getNumberAfterColon from '@utils/getNumberAfterColon';
+import getNumberAfterColon from '@utils/get-number-after-colon';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
 import {
   ReactNode,

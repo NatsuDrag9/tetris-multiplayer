@@ -10,7 +10,7 @@ import {
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { logInDev } from '@utils/log-utils';
 import { useNavigate } from 'react-router-dom';
-import wsErrorMessageHandler from '@utils/wsErrorMessageHandler';
+import wsErrorMessageHandler from '@utils/ws-error-message-handler';
 import { Toaster } from 'react-hot-toast';
 
 function MultiPlayerGameRoom() {

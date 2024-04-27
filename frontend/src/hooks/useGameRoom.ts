@@ -1,5 +1,5 @@
 import { GameRoomDetails } from '@customTypes/gameTypes';
-import getNumberAfterColon from '@utils/getNumberAfterColon';
+import getNumberAfterColon from '@utils/get-number-after-colon';
 import { logErrorInDev } from '@utils/log-utils';
 import { useState } from 'react';
 

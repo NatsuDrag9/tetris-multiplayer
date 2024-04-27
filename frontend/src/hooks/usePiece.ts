@@ -2,8 +2,8 @@ import { STAGE_WIDTH } from '@constants/game';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
-import { checkCollision } from '@utils/gameHelpers';
-import getRandomTetromino from '@utils/getRandomTetromino';
+import { checkCollision } from '@utils/game-helpers';
+import getRandomTetromino from '@utils/get-random-tetromino';
 import { useCallback, useState } from 'react';
 
 const usePiece = (initialTetromino: TetrominoShape) => {

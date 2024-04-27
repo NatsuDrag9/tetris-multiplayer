@@ -1,7 +1,7 @@
 import { CLEAR_CELL, INITIAL_ROWS_CLEARED, MERGE_CELL } from '@constants/game';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
-import { createStage } from '@utils/gameHelpers';
+import { createStage } from '@utils/game-helpers';
 import { useState, useEffect } from 'react';
 
 const useStage = (piece: Piece, resetPiece: () => void) => {

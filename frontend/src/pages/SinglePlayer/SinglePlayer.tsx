@@ -1,10 +1,10 @@
 import GameArea from '@components/GameArea/GameArea';
 import './SinglePlayer.scss';
 import { useEffect, useRef, useState } from 'react';
-import getRandomTetromino from '@utils/getRandomTetromino';
+import getRandomTetromino from '@utils/get-random-tetromino';
 import useStage from '@hooks/useStage';
 import useGameStatus from '@hooks/useGameStatus';
-import { checkCollision, createStage } from '@utils/gameHelpers';
+import { checkCollision, createStage } from '@utils/game-helpers';
 import {
   BASE_DROP_TIME,
   DROP_TIME_INCR,

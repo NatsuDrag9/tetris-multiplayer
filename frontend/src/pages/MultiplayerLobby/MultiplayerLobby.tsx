@@ -4,7 +4,7 @@ import { logErrorInDev, logInDev } from '@utils/log-utils';
 import fetchRandomCode from '@services/multiPlayer';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import validateRoomCode from '@utils/validateRoomCode';
+import validateRoomCode from '@utils/validate-room-code';
 import {
   CODE_TIMEOUT,
   CommMessage,
@@ -18,12 +18,12 @@ import {
   RETURN_HOME_TIMER,
 } from '@constants/game';
 import { WebSocketMessage } from '@customTypes/gameTypes';
-import navigateToMultiplayer from '@utils/navigateToMultiplayer';
-import wsCommStatusCheck from '@utils/wsCommStatusCheck';
+import navigateToMultiplayer from '@utils/navigate-to-multiplayer';
+import wsCommStatusCheck from '@utils/ws-comm-status-check';
 import toast, { Toaster } from 'react-hot-toast';
 import LoadingOverlay from 'react-loading-overlay-ts';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
-import wsErrorMessageHandler from '@utils/wsErrorMessageHandler';
+import wsErrorMessageHandler from '@utils/ws-error-message-handler';
 import Timer from '@components/Timer/Timer';
 
 function MultiplayerLobby() {

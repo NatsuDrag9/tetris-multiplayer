@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Timer.scss';
-import formatTime from '@utils/date-and-time-utils';
+import formatTime from '@utils/date-time-utils';
 
 interface TimerProps {
   timerValue: number;
