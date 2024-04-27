@@ -245,6 +245,10 @@ function MultiplayerLobby() {
     );
   };
 
+  const handleHomeNavigation = () => {
+    navigate('/home');
+  };
+
   return (
     <div className="multiplayer-lobby">
       <Toaster />
@@ -325,8 +329,16 @@ function MultiplayerLobby() {
               </button>
             </div>
           ) : (
-            <section className="multiplayer__display">
-              <p>Please wait...</p>
+            <section className="error-wrapper">
+              <p className="error__message">
+                Couldn't find code. Going back home
+              </p>
+              <button
+                className="multiplayer-lobby__button home"
+                onClick={handleHomeNavigation}
+              >
+                Home
+              </button>
             </section>
           )}
         </section>

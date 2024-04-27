@@ -24,9 +24,20 @@
     @media (max-width: $screen-width-800) {
       width: 30vw;
     }
+  }
+
+  &__button {
+    width: 18vw;
+    height: 4vw;
+    transition: 0.1s ease-out;
+
+    &:hover {
+      transform: scale(1.05);
+      transition: 0.1s ease-in;
+    }
 
     &.regenerate-code {
-      font-size: 1vw;
+      font-size: 0.8vw;
     }
   }
 
@@ -111,12 +122,6 @@
         .multiplayer-lobby__button {
           width: 25vw;
           height: 4vw;
-          transition: 0.1s ease-out;
-
-          &:hover {
-            transform: scale(1.05);
-            transition: 0.1s ease-in;
-          }
         }
       }
     }
@@ -137,13 +142,14 @@
     }
 
     .code-wrapper,
-    .input-wrapper {
+    .input-wrapper,
+    .error-wrapper {
       height: 80%;
       width: 100%;
       min-height: 10vw;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-evenly;
       align-items: center;
       // border: 1px solid red;
 
@@ -168,7 +174,8 @@
       // border: 1px solid red;
     }
 
-    .text {
+    .text,
+    .error__message {
       font-size: 1.1vw;
       font-family: $font-family-intro;
       text-transform: uppercase;
