@@ -4,9 +4,10 @@ import formatTime from '@utils/date-and-time-utils';
 
 interface TimerProps {
   timerValue: number;
+  onTimerEnd: (isInValid: boolean) => void;
 }
 
-const Timer = ({ timerValue }: TimerProps) => {
+const Timer = ({ timerValue, onTimerEnd }: TimerProps) => {
   const [time, setTime] = useState<number>(timerValue);
 
   useEffect(() => {
@@ -15,6 +16,7 @@ const Timer = ({ timerValue }: TimerProps) => {
         const newTime = prevTime - 1;
         if (newTime === 0) {
           clearInterval(timer);
+          onTimerEnd(true);
         }
         return newTime;
       });

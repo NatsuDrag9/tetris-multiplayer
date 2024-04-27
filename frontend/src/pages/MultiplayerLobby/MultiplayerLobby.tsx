@@ -6,6 +6,7 @@ import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import validateRoomCode from '@utils/validateRoomCode';
 import {
+  CODE_TIMEOUT,
   CommMessage,
   CommStatus,
   CommStatusCheck,
@@ -23,6 +24,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import LoadingOverlay from 'react-loading-overlay-ts';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import wsErrorMessageHandler from '@utils/wsErrorMessageHandler';
+import Timer from '@components/Timer/Timer';
 
 function MultiplayerLobby() {
   let homeTimerId: number = 0;
@@ -40,6 +42,7 @@ function MultiplayerLobby() {
   } = useWebSocketContext();
   const [generatesCode, setGeneratesCode] = useState<boolean | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isCodeInvalid, setIsCodeInvalid] = useState<boolean>(false);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -118,6 +121,7 @@ function MultiplayerLobby() {
           sendMessage(playerOneMessage);
           setCode(response.code);
           setCurrentPlayer(PLAYER_ONE);
+          setIsCodeInvalid(false);
           // Start a 120 sec timer here. If PLAYER_TWO fails to enter the code within 120 sec,
           // ask PLAYER_ONE to regenerate code
         } else if (
@@ -188,6 +192,7 @@ function MultiplayerLobby() {
       };
       sendMessage(playerTwoMessage);
       setCurrentPlayer(PLAYER_TWO);
+      setIsCodeInvalid(false);
     } else if (commStatusCheck === CommStatusCheck.PLAYER_TWO_IS_DISCONNECTED) {
       toast.error('You are not connected to the server. Returning to home');
       returnToHome();
@@ -197,10 +202,47 @@ function MultiplayerLobby() {
     }
   };
 
+  const handleTimerEnd = (isInvalid: boolean) => {
+    setIsCodeInvalid(isInvalid);
+  };
+
+  const handleRegenerateCode = async () => {
+    setIsCodeInvalid(false);
+    await generateRandomCode();
+  };
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       handleJoinGameRoom();
     }
+  };
+
+  const renderCode = () => {
+    if (isCodeInvalid) {
+      return (
+        <>
+          <h3 className="title">Code Expired</h3>
+          {/* <p className="text">
+            The code has expired. Please regenerate a new code.
+          </p> */}
+          <button
+            className="multiplayer-lobby__button regenerate-code"
+            onClick={handleRegenerateCode}
+          >
+            Regenerate Code
+          </button>
+        </>
+      );
+    }
+    return (
+      <>
+        <Timer timerValue={CODE_TIMEOUT} onTimerEnd={handleTimerEnd} />
+        <h3 className="title">
+          Share this code with your friend before time runs out!
+        </h3>
+        <p className="code">{code}</p>
+      </>
+    );
   };
 
   return (
@@ -262,10 +304,7 @@ function MultiplayerLobby() {
         <section className="multiplayer-lobby__display">
           {generatesCode === true ? (
             <LoadingOverlay active={loading} spinner>
-              <div className="code-wrapper">
-                <h3 className="title">Share this code with your friend!</h3>
-                <p className="code">{code}</p>
-              </div>
+              <div className="code-wrapper">{renderCode()}</div>
             </LoadingOverlay>
           ) : code ? (
             <div className="input-wrapper">

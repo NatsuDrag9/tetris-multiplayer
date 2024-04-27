@@ -24,6 +24,10 @@
     @media (max-width: $screen-width-800) {
       width: 30vw;
     }
+
+    &.regenerate-code {
+      font-size: 1vw;
+    }
   }
 
   .intro {
@@ -134,14 +138,17 @@
 
     .code-wrapper,
     .input-wrapper {
-      height: 50%;
+      height: 80%;
       width: 100%;
+      min-height: 10vw;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       // border: 1px solid red;
+
       // @media (max-width: $screen-width-800) {
-      //   // width: 50%;
+      //   width: 50%;
       //   align-items: center;
       //   justify-content: space-around;
       // }
@@ -161,6 +168,13 @@
       // border: 1px solid red;
     }
 
+    .text {
+      font-size: 1.1vw;
+      font-family: $font-family-intro;
+      text-transform: uppercase;
+      text-align: left;
+    }
+
     .input-wrapper {
       justify-content: space-around;
       align-items: center;
@@ -168,7 +182,7 @@
         border: 1px solid $theme-border-color;
         background-color: black;
         color: antiquewhite;
-        height: 4vw;
+        height: 2vw;
         padding: 0.5vw;
         border-radius: 1vw;
         width: 70%;
@@ -179,6 +193,12 @@
         font-size: 1vw;
         height: 4vw;
         width: 70%;
+      }
+
+      @media (max-width: $screen-width-800) {
+        input {
+          height: 4vw;
+        }
       }
     }
   }
