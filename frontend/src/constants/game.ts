@@ -33,6 +33,7 @@ export const LINE_POINTS = [40, 100, 300, 1200];
 //   PLAYER_TWO_JOINED: 'PLAYER_TWO_JOINED',
 // };
 
+// Communication constants
 export const CommStatus = {
   IN_GAME_ROOM: 'IN_GAME_ROOM',
   IN_LOBBY: 'IN_LOBBY',
@@ -86,6 +87,10 @@ export const CommStatusCheck = {
   MESSAGE_DOES_NOT_EXIST: -1,
 };
 
+// Lobby timeouts
 export const RETURN_HOME_TIMER = 2000; // in ms
-
 export const SERVER_ACKNOWLEDGMENT_TIMEOUT = 5000; // in ms
+export const CODE_TIMEOUT = 120; // in sec
+
+// Game Room timeouts
+export const PLAYER_MOVE_TIMEOUT = 30; // in sec

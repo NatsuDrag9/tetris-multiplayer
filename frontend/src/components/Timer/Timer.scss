@@ -1,0 +1,17 @@
+@import '@styles/main.scss';
+@import '@styles/mixins.scss';
+
+.timer {
+  width: 100%;
+  height: 5vw;
+  padding: 1vw;
+  text-align: center;
+  font-size: 1vw;
+  font-family: $font-family-intro;
+  color: antiquewhite;
+
+  @media (max-width: $screen-width-800) {
+    font-size: 1.5vw;
+    width: 80%;
+  }
+}
