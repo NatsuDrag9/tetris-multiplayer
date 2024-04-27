@@ -37,7 +37,7 @@
     }
 
     &.regenerate-code {
-      font-size: 0.8vw;
+      font-size: 1vw;
     }
   }
 
@@ -144,9 +144,9 @@
     .code-wrapper,
     .input-wrapper,
     .error-wrapper {
-      height: 80%;
+      height: 50%;
       width: 100%;
-      min-height: 10vw;
+
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
@@ -158,6 +158,10 @@
       //   align-items: center;
       //   justify-content: space-around;
       // }
+    }
+
+    .code-wrapper.error {
+      height: 20vw;
     }
 
     .title {

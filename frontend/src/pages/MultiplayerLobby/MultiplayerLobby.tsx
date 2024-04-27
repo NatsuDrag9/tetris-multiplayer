@@ -158,6 +158,7 @@ function MultiplayerLobby() {
     const errorMessage = validateRoomCode(enteredCode, code);
 
     if (errorMessage) {
+      toast.error(errorMessage);
       logErrorInDev(errorMessage);
     } else {
       // Send message on successful validation
@@ -222,9 +223,6 @@ function MultiplayerLobby() {
       return (
         <>
           <h3 className="title">Code Expired</h3>
-          {/* <p className="text">
-            The code has expired. Please regenerate a new code.
-          </p> */}
           <button
             className="multiplayer-lobby__button regenerate-code"
             onClick={handleRegenerateCode}
@@ -308,7 +306,9 @@ function MultiplayerLobby() {
         <section className="multiplayer-lobby__display">
           {generatesCode === true ? (
             <LoadingOverlay active={loading} spinner>
-              <div className="code-wrapper">{renderCode()}</div>
+              <div className={`code-wrapper ${isCodeInvalid ? 'error' : ''}`}>
+                {renderCode()}
+              </div>
             </LoadingOverlay>
           ) : code ? (
             <div className="input-wrapper">
