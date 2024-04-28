@@ -204,8 +204,8 @@ function MultiplayerLobby() {
     }
   };
 
-  const handleTimerEnd = (isInvalid: boolean) => {
-    setIsCodeInvalid(isInvalid);
+  const handleTimerEnd = (ended: boolean) => {
+    setIsCodeInvalid(ended);
   };
 
   const handleRegenerateCode = async () => {

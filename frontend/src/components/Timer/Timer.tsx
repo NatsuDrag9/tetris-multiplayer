@@ -4,7 +4,7 @@ import formatTime from '@utils/date-time-utils';
 
 interface TimerProps {
   timerValue: number;
-  onTimerEnd: (isInValid: boolean) => void;
+  onTimerEnd: (ended: boolean) => void;
 }
 
 const Timer = ({ timerValue, onTimerEnd }: TimerProps) => {
@@ -16,7 +16,9 @@ const Timer = ({ timerValue, onTimerEnd }: TimerProps) => {
         const newTime = prevTime - 1;
         if (newTime === 0) {
           clearInterval(timer);
-          onTimerEnd(true);
+          if (onTimerEnd) {
+            onTimerEnd(true);
+          }
         }
         return newTime;
       });
