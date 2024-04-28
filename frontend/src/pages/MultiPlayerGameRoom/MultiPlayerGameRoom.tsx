@@ -1,6 +1,5 @@
-import GameRoom from '@components/GameRoom/GameRoom';
 import './MultiPlayerGameRoom.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CommMessage,
   CommStatus,
@@ -12,12 +11,19 @@ import { logInDev } from '@utils/log-utils';
 import { useNavigate } from 'react-router-dom';
 import wsErrorMessageHandler from '@utils/ws-error-message-handler';
 import { Toaster } from 'react-hot-toast';
+import SelectTetromino from '@components/SelectTetromino/SelectTetromino';
+import { TetrominoShape } from '@customTypes/tetromonoTypes';
+import getRandomTetromino from '@utils/get-random-tetromino';
 
 function MultiPlayerGameRoom() {
   let homeTimerId: number = 0;
   const navigate = useNavigate();
   const { isConnectedToServer, gameRoomDetails, errorMessages, sendMessage } =
     useWebSocketContext();
+  const [selectedTetromino, setSelectedTetromino] = useState<TetrominoShape>(
+    getRandomTetromino().shape
+  );
+  const [timerEnded, setTimerEnded] = useState<boolean>(false);
 
   useEffect(() => {
     // Send a message when inside game room
@@ -52,10 +58,22 @@ function MultiPlayerGameRoom() {
     }, RETURN_HOME_TIMER);
   };
 
+  const handleSelectedTetrmino = (tetromino: TetrominoShape) => {
+    setSelectedTetromino(tetromino);
+    logInDev(tetromino);
+  };
+
+  const handleTimerEnded = (ended: boolean) => {
+    setTimerEnded(ended);
+  };
+
   return (
     <div className="multi-player">
       <Toaster />
-      <GameRoom />
+      <SelectTetromino
+        onSelectedTetromino={handleSelectedTetrmino}
+        onTimerEnd={handleTimerEnded}
+      />
     </div>
   );
 }
