@@ -48,6 +48,7 @@ function MultiPlayerGameRoom() {
   const returnToHome = () => {
     homeTimerId = setTimeout(() => {
       navigate('/home');
+      window.location.reload();
     }, RETURN_HOME_TIMER);
   };
 
