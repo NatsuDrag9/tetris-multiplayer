@@ -1,6 +1,9 @@
 export const STAGE_WIDTH = 12;
 export const STAGE_HEIGHT = 20;
 
+export const TETROMINO_STAGE_WIDTH = 5;
+export const TETROMINO_STAGE_HEIGHT = 5;
+
 export const CLEAR_CELL = 'CLEAR';
 export const MERGE_CELL = 'MERGED';
 
@@ -90,7 +93,7 @@ export const CommStatusCheck = {
 // Lobby timeouts
 export const RETURN_HOME_TIMER = 2000; // in ms
 export const SERVER_ACKNOWLEDGMENT_TIMEOUT = 5000; // in ms
-export const CODE_TIMEOUT = 120; // in sec
+export const CODE_TIMEOUT = 10; // in sec
 
 // Game Room timeouts
-export const PLAYER_MOVE_TIMEOUT = 30; // in sec
+export const TURN_TIMER = 30; // Wait for 30 sec to make a move

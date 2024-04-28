@@ -17,7 +17,6 @@ import {
   MessageType,
   PLAYER_ONE,
   PLAYER_TWO,
-  TURN_TIMER,
 } from '@src/constants/appConstants';
 import { removeClientFromList, resetGameRoom } from '@utils/game-utils';
 
@@ -92,14 +91,12 @@ function handleCommunicationMessages(
                 playerName: PLAYER_ONE,
                 score: 0,
                 turnsRemaining: MAX_TURNS,
-                tunrTimer: TURN_TIMER,
               },
               playerTwoInfo: {
                 penalties: 0,
                 playerName: PLAYER_ONE,
                 score: 0,
                 turnsRemaining: MAX_TURNS,
-                tunrTimer: TURN_TIMER,
               },
               wsPlayerOne: matchedPlayerOne.wsClient,
               wsPlayerTwo: ws,

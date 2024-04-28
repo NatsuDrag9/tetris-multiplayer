@@ -5,7 +5,6 @@ export interface Player {
   score: number;
   turnsRemaining: number;
   penalties: number;
-  tunrTimer: number;
 }
 
 export interface GameRoom {
