@@ -1,5 +1,5 @@
 import './SelectTetromino.scss';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import useTetrominoStage from '@hooks/useTetrominoStage';
 import {
