@@ -1,8 +1,8 @@
 export const STAGE_WIDTH = 12;
 export const STAGE_HEIGHT = 20;
 
-export const TETROMINO_STAGE_WIDTH = 5;
-export const TETROMINO_STAGE_HEIGHT = 5;
+export const TETROMINO_STAGE_WIDTH = 4;
+export const TETROMINO_STAGE_HEIGHT = 4;
 
 export const CLEAR_CELL = 'CLEAR';
 export const MERGE_CELL = 'MERGED';

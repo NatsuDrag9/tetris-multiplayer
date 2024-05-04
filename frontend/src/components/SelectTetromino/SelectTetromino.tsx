@@ -1,5 +1,5 @@
 import './SelectTetromino.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import useTetrominoStage from '@hooks/useTetrominoStage';
 import {
@@ -9,6 +9,11 @@ import {
 } from '@constants/game';
 import Timer from '@components/Timer/Timer';
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronLeft,
+  faChevronRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface SelectTetrominoProps {
   onSelectedTetromino: (tetromino: TetrominoShape) => void;
@@ -68,18 +73,30 @@ function SelectTetromino({
 
   return (
     <div className="select-tetromino">
-      <div
-        className="stage"
-        style={{
-          '--tetrominoStageHeight': `${TETROMINO_STAGE_HEIGHT}`,
-          '--tetrominoStageWidth': `${TETROMINO_STAGE_WIDTH}`,
-        }}
-      >
-        {tetrominoStage.map((row) =>
-          row.map((cell, cellIndex) => (
-            <TetrominoCell key={cellIndex} tetrominoType={cell[0]} />
-          ))
-        )}
+      <div className="stage-wrapper">
+        <FontAwesomeIcon
+          icon={faChevronLeft}
+          onClick={() => switchTetromino(-1)}
+        />
+        <div
+          className="stage"
+          style={{
+            '--tetrominoStageHeight': `${TETROMINO_STAGE_HEIGHT}`,
+            '--tetrominoStageWidth': `${TETROMINO_STAGE_WIDTH}`,
+          }}
+        >
+          {tetrominoStage.map((row) =>
+            row.map((cell, cellIndex) => (
+              <TetrominoCell key={cellIndex} tetrominoType={cell[0]} />
+            ))
+          )}
+        </div>
+        <FontAwesomeIcon
+          icon={faChevronRight}
+          onClick={() => {
+            switchTetromino(1);
+          }}
+        />
       </div>
       <div className="timer-container">
         <Timer timerValue={TURN_TIMER} onTimerEnd={handleTimerEnded} />

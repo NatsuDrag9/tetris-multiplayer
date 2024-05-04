@@ -42,6 +42,7 @@
   @media (max-width: $screen-width-800) {
     flex-direction: column;
     justify-content: space-between;
+    height: 100%;
 
     &__game,
     &__info {

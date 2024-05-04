@@ -4,6 +4,8 @@ import DisplayLabel from '@components/DisplayLabel/DisplayLabel';
 import { StageType } from '@customTypes/gameTypes';
 import { STAGE_HEIGHT, STAGE_WIDTH } from '@constants/game';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
+import { TetrominoShape } from '@customTypes/tetromonoTypes';
+import SelectTetromino from '@components/SelectTetromino/SelectTetromino';
 
 interface GameAreaPropsType {
   stage: StageType;
@@ -12,8 +14,11 @@ interface GameAreaPropsType {
   gameScore: number;
   rows: number;
   currentLevel: number;
-  gamePaused: boolean;
+  gamePaused?: boolean;
   gameStarted: boolean;
+  isMultiplayer?: boolean;
+  onTetrominoSelect?: (tetromino: TetrominoShape) => void;
+  onTimerEnded?: (ended: boolean) => void;
 }
 
 function GameArea({
@@ -25,27 +30,69 @@ function GameArea({
   currentLevel,
   gamePaused,
   gameStarted,
+  isMultiplayer,
+  onTetrominoSelect,
+  onTimerEnded,
 }: GameAreaPropsType) {
   const handleButtonClick = () => {
     onButtonClick();
   };
-  return (
-    <div className="game-area">
-      <section
-        className="game-area__game"
-        // Replace this with stage.length and stage[0].length respectively later when stage is defined
-        style={{
-          '--stageHeight': `${STAGE_HEIGHT}`,
-          '--stageWidth': `${STAGE_WIDTH}`,
-        }}
-      >
-        {/* This is where tetrominoes will fall */}
-        {stage.map((row) =>
-          row.map((cell, x) => {
-            return <TetrominoCell key={x} tetrominoType={cell[0]} />;
-          })
-        )}
-      </section>
+
+  const handleSelectedTetrmino = (tetromino: TetrominoShape) => {
+    if (onTetrominoSelect) {
+      onTetrominoSelect(tetromino);
+    }
+  };
+
+  const handleTimerEnded = (ended: boolean) => {
+    if (onTimerEnded) {
+      onTimerEnded(ended);
+    }
+  };
+
+  const renderGameInfo = () => {
+    if (isMultiplayer) {
+      return (
+        <aside className="game-area__info">
+          {!gameOver ? (
+            <>
+              <SelectTetromino
+                onSelectedTetromino={handleSelectedTetrmino}
+                onTimerEnd={handleTimerEnded}
+              />
+              <DisplayLabel
+                gameOver={gameOver}
+                labelName="Rows: "
+                labelContent={rows.toString()}
+              />
+              <DisplayLabel
+                gameOver={gameOver}
+                labelName="Level: "
+                labelContent={currentLevel.toString()}
+              />
+              <DisplayLabel
+                gameOver={gameOver}
+                labelName="Score: "
+                labelContent={gameScore.toString()}
+              />
+              <GameButton
+                buttonText={'Use Tetromino'}
+                onButtonClick={handleButtonClick}
+              />
+            </>
+          ) : (
+            <>
+              <DisplayLabel
+                gameOver={gameOver}
+                labelName=""
+                labelContent="YOU FINISHED YOUR TURNS"
+              />
+            </>
+          )}
+        </aside>
+      );
+    }
+    return (
       <aside className="game-area__info">
         {!gameOver ? (
           <>
@@ -89,8 +136,36 @@ function GameArea({
           </>
         )}
       </aside>
+    );
+  };
+
+  return (
+    <div className="game-area">
+      <section
+        className="game-area__game"
+        // Replace this with stage.length and stage[0].length respectively later when stage is defined
+        style={{
+          '--stageHeight': `${STAGE_HEIGHT}`,
+          '--stageWidth': `${STAGE_WIDTH}`,
+        }}
+      >
+        {/* This is where tetrominoes will fall */}
+        {stage.map((row) =>
+          row.map((cell, x) => {
+            return <TetrominoCell key={x} tetrominoType={cell[0]} />;
+          })
+        )}
+      </section>
+      {renderGameInfo()}
     </div>
   );
 }
 
 export default GameArea;
+
+GameArea.defaultProps = {
+  isMultiplayer: false,
+  onTimerEnded: (_ended: boolean) => {},
+  onTetrominoSelect: () => {},
+  gamePaused: false,
+};

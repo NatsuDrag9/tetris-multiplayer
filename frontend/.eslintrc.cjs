@@ -35,5 +35,6 @@ module.exports = {
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'react/react-in-jsx-scope': 'off',
+    'max-len': 'off',
   },
 };

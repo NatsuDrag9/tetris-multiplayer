@@ -1,7 +1,13 @@
 // Create an array of size STAGE_HEIGHT where each row in the array
 // contains another array of size STAGE_WIDTH filled with "clear"
 
-import { CLEAR_CELL, STAGE_HEIGHT, STAGE_WIDTH } from '@constants/game';
+import {
+  CLEAR_CELL,
+  STAGE_HEIGHT,
+  STAGE_WIDTH,
+  TETROMINO_STAGE_HEIGHT,
+  TETROMINO_STAGE_WIDTH,
+} from '@constants/game';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece, PiecePosition } from '@customTypes/pieceTypes';
 
@@ -12,6 +18,10 @@ export const createStage = () =>
     new Array(STAGE_WIDTH).fill([0, CLEAR_CELL])
   );
 
+export const createTetrominoStage = () =>
+  Array.from(Array(TETROMINO_STAGE_HEIGHT), () =>
+    new Array(TETROMINO_STAGE_WIDTH).fill([0, CLEAR_CELL])
+  );
 // export const checkCollision = (
 //   player: Player,
 //   stage: StageType,
