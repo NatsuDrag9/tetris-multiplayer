@@ -14,9 +14,10 @@ import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
+import GameButton from '@components/GameButton/GameButton';
 
 interface SelectTetrominoProps {
-  onSelectedTetromino: (tetromino: TetrominoShape) => void;
+  onSelectedTetromino: ((tetromino: TetrominoShape) => void) | undefined;
   onTimerEnd: (ended: boolean) => void;
 }
 
@@ -48,7 +49,8 @@ function SelectTetromino({
           rotateTetromino();
           break;
         case 'Enter':
-          onSelectedTetromino(selectedTetromino);
+          // onSelectedTetromino(selectedTetromino);
+          handleButtonClick();
           break;
         default:
           break;
@@ -69,6 +71,12 @@ function SelectTetromino({
 
   const handleTimerEnded = (ended: boolean) => {
     onTimerEnd(ended);
+  };
+
+  const handleButtonClick = () => {
+    if (onSelectedTetromino) {
+      onSelectedTetromino(selectedTetromino);
+    }
   };
 
   return (
@@ -101,6 +109,10 @@ function SelectTetromino({
       <div className="timer-container">
         <Timer timerValue={TURN_TIMER} onTimerEnd={handleTimerEnded} />
       </div>
+      <GameButton
+        buttonText={'Use Tetromino'}
+        onButtonClick={handleButtonClick}
+      />
     </div>
   );
 }

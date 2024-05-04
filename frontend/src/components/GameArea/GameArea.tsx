@@ -38,12 +38,6 @@ function GameArea({
     onButtonClick();
   };
 
-  const handleSelectedTetrmino = (tetromino: TetrominoShape) => {
-    if (onTetrominoSelect) {
-      onTetrominoSelect(tetromino);
-    }
-  };
-
   const handleTimerEnded = (ended: boolean) => {
     if (onTimerEnded) {
       onTimerEnded(ended);
@@ -57,7 +51,7 @@ function GameArea({
           {!gameOver ? (
             <>
               <SelectTetromino
-                onSelectedTetromino={handleSelectedTetrmino}
+                onSelectedTetromino={onTetrominoSelect}
                 onTimerEnd={handleTimerEnded}
               />
               <DisplayLabel
@@ -74,10 +68,6 @@ function GameArea({
                 gameOver={gameOver}
                 labelName="Score: "
                 labelContent={gameScore.toString()}
-              />
-              <GameButton
-                buttonText={'Use Tetromino'}
-                onButtonClick={handleButtonClick}
               />
             </>
           ) : (
