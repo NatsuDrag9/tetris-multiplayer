@@ -11,11 +11,11 @@ const Timer = ({ timerValue, onTimerEnd }: TimerProps) => {
   const [time, setTime] = useState<number>(timerValue);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timerId = setInterval(() => {
       setTime((prevTime) => {
         const newTime = prevTime - 1;
         if (newTime === 0) {
-          clearInterval(timer);
+          clearInterval(timerId);
           if (onTimerEnd) {
             onTimerEnd(true);
           }
@@ -24,10 +24,14 @@ const Timer = ({ timerValue, onTimerEnd }: TimerProps) => {
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => clearInterval(timerId);
   }, []);
 
   return <h3 className="timer">{formatTime(time)}</h3>;
 };
 
 export default Timer;
+
+Timer.defaultProps = {
+  resetTimer: false,
+};
