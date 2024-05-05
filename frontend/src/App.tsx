@@ -5,6 +5,7 @@ import SinglePlayer from '@pages/SinglePlayer/SinglePlayer';
 import MultiplayerLobby from '@pages/MultiplayerLobby/MultiplayerLobby';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import MultiPlayerGameRoom from '@pages/MultiPlayerGameRoom/MultiPlayerGameRoom';
+import { MultiplayerGameProvider } from '@contexts/MultiplayerGameContext';
 
 function App() {
   return (
@@ -15,7 +16,14 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/singleplayer" element={<SinglePlayer />} />
           <Route path="/multiplayer-lobby" element={<MultiplayerLobby />} />
-          <Route path="/multiplayer" element={<MultiPlayerGameRoom />} />
+          <Route
+            path="/multiplayer"
+            element={
+              <MultiplayerGameProvider>
+                <MultiPlayerGameRoom />
+              </MultiplayerGameProvider>
+            }
+          />
         </Routes>
       </WebSocketProvider>
     </div>

@@ -4,6 +4,7 @@ import {
   INITIAL_ROWS_CLEARED,
   MERGE_CELL,
 } from '@constants/game';
+import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
@@ -17,6 +18,7 @@ const useStage = (
 ) => {
   const [stage, setStage] = useState(createStage());
   const [rowsCleared, setRowsCleared] = useState(INITIAL_ROWS_CLEARED);
+  const { userSelectedTetromino } = useMultiplayerGameContext();
 
   useEffect(() => {
     setRowsCleared(0);
@@ -63,7 +65,7 @@ const useStage = (
         if (gameMode === GameMode.SINGLE_PLAYER) {
           resetPiece(null);
         } else if (gameMode === GameMode.MULTI_PLAYER) {
-          // resetPiece(tetromino);
+          resetPiece(userSelectedTetromino);
         }
         return clearRows(newStage);
       }
@@ -72,7 +74,7 @@ const useStage = (
     };
 
     setStage((prev) => updateStage(prev));
-  }, [piece, resetPiece, gameMode]);
+  }, [piece, resetPiece, gameMode, userSelectedTetromino]);
 
   return {
     stage,
