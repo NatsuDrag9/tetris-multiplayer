@@ -21,17 +21,21 @@
       width: 70%;
       height: 100%;
       display: grid;
-      margin: 0 3vw;
+      margin: 0 1vw;
       grid-template-rows: repeat(
         var(--tetrominoStageHeight),
         calc(100% / var(--tetrominoStageWidth))
       );
       grid-template-columns: repeat(var(--tetrominoStageWidth), 1fr);
       // border: 1px solid red;
+
+      @media (max-width: $screen-width-800) {
+        margin: 0 2vw;
+      }
     }
 
     .svg-inline--fa {
-      font-size: 2vw;
+      font-size: 1.5vw;
       transition: transform 0.3s ease-in-out;
       cursor: pointer;
 
