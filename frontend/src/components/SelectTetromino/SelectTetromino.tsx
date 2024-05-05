@@ -1,5 +1,5 @@
 import './SelectTetromino.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import useTetrominoStage from '@hooks/useTetrominoStage';
 import {
@@ -7,24 +7,21 @@ import {
   TETROMINO_STAGE_WIDTH,
   TURN_TIMER,
 } from '@constants/game';
-import Timer from '@components/Timer/Timer';
-import { TetrominoShape } from '@customTypes/tetromonoTypes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import GameButton from '@components/GameButton/GameButton';
+import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
+import getRandomTetromino from '@utils/get-random-tetromino';
+import formatTime from '@utils/date-time-utils';
 
 interface SelectTetrominoProps {
-  onSelectedTetromino: ((tetromino: TetrominoShape) => void) | undefined;
-  onTimerEnd: (ended: boolean) => void;
+  startTimer: boolean;
 }
 
-function SelectTetromino({
-  onSelectedTetromino,
-  onTimerEnd,
-}: SelectTetrominoProps) {
+function SelectTetromino({ startTimer }: SelectTetrominoProps) {
   const {
     tetrominoStage,
     switchTetromino,
@@ -32,6 +29,11 @@ function SelectTetromino({
     selectedTetromino,
     addNewTetrominoToStage,
   } = useTetrominoStage();
+  const { setUserSelectedTetromino } = useMultiplayerGameContext();
+  const [tetrominoSelected, setTetrmonioSelected] = useState<boolean>(false);
+  const [timer, setTimer] = useState(TURN_TIMER);
+  const [timerEnded, setTimerEnded] = useState<boolean>(false);
+
   useEffect(() => {
     addNewTetrominoToStage();
   }, []);
@@ -63,20 +65,47 @@ function SelectTetromino({
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [
-    onSelectedTetromino,
+    // onSelectedTetromino,
     rotateTetromino,
     switchTetromino,
     selectedTetromino,
   ]);
 
-  const handleTimerEnded = (ended: boolean) => {
-    onTimerEnd(ended);
-  };
+  useEffect(() => {
+    if (timerEnded && !tetrominoSelected) {
+      setUserSelectedTetromino(getRandomTetromino().shape);
+      setTetrmonioSelected(false);
+    }
+  }, [timerEnded, tetrominoSelected]);
+
+  useEffect(() => {
+    if (!tetrominoSelected && startTimer) {
+      const timerId = setInterval(() => {
+        setTimer((prevTime) => {
+          const newTime = prevTime - 1;
+          if (newTime === 0) {
+            clearInterval(timerId);
+            setTimerEnded(true);
+          }
+          return newTime;
+        });
+      }, 1000);
+
+      return () => clearInterval(timerId);
+    }
+  }, [startTimer, tetrominoSelected]);
+
+  useEffect(() => {
+    if (tetrominoSelected && !startTimer) {
+      setTimer(0);
+      setTetrmonioSelected(false);
+    }
+  }, [startTimer, tetrominoSelected]);
 
   const handleButtonClick = () => {
-    if (onSelectedTetromino) {
-      onSelectedTetromino(selectedTetromino);
-    }
+    setTetrmonioSelected(true);
+    setUserSelectedTetromino(selectedTetromino);
+    setTimer(0);
   };
 
   return (
@@ -107,7 +136,7 @@ function SelectTetromino({
         />
       </div>
       <div className="timer-container">
-        <Timer timerValue={TURN_TIMER} onTimerEnd={handleTimerEnded} />
+        <h3 className="timer">{formatTime(timer)}</h3>
       </div>
       <GameButton
         buttonText={'Use Tetromino'}
