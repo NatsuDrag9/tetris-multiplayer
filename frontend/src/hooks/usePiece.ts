@@ -76,10 +76,10 @@ const usePiece = (initialTetromino: TetrominoShape) => {
 
   // Resets the piece state. Callback doesn't depend on
   // anything because the function is only called once
-  const resetPiece = useCallback(() => {
+  const resetPiece = useCallback((tetromino: TetrominoShape | null) => {
     setPiece({
       position: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-      tetromino: getRandomTetromino().shape,
+      tetromino: tetromino !== null ? tetromino : getRandomTetromino().shape,
       collided: false,
     });
   }, []);

@@ -1,10 +1,20 @@
-import { CLEAR_CELL, INITIAL_ROWS_CLEARED, MERGE_CELL } from '@constants/game';
+import {
+  CLEAR_CELL,
+  GameMode,
+  INITIAL_ROWS_CLEARED,
+  MERGE_CELL,
+} from '@constants/game';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
+import { TetrominoShape } from '@customTypes/tetromonoTypes';
 import { createStage } from '@utils/game-helpers';
 import { useState, useEffect } from 'react';
 
-const useStage = (piece: Piece, resetPiece: () => void) => {
+const useStage = (
+  piece: Piece,
+  resetPiece: (tetromino: TetrominoShape | null) => void,
+  gameMode: string
+) => {
   const [stage, setStage] = useState(createStage());
   const [rowsCleared, setRowsCleared] = useState(INITIAL_ROWS_CLEARED);
 
@@ -50,7 +60,11 @@ const useStage = (piece: Piece, resetPiece: () => void) => {
       });
 
       if (piece.collided) {
-        resetPiece();
+        if (gameMode === GameMode.SINGLE_PLAYER) {
+          resetPiece(null);
+        } else if (gameMode === GameMode.MULTI_PLAYER) {
+          // resetPiece(tetromino);
+        }
         return clearRows(newStage);
       }
 
@@ -58,7 +72,7 @@ const useStage = (piece: Piece, resetPiece: () => void) => {
     };
 
     setStage((prev) => updateStage(prev));
-  }, [piece, resetPiece]);
+  }, [piece, resetPiece, gameMode]);
 
   return {
     stage,

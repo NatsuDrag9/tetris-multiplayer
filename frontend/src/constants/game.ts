@@ -1,3 +1,10 @@
+// Game mode
+export const GameMode = {
+  SINGLE_PLAYER: 'SINGLE_PLAYER',
+  MULTI_PLAYER: 'MULTI_PLAYER',
+};
+
+// Stage
 export const STAGE_WIDTH = 12;
 export const STAGE_HEIGHT = 20;
 

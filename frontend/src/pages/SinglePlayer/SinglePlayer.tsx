@@ -8,6 +8,7 @@ import { checkCollision, createStage } from '@utils/game-helpers';
 import {
   BASE_DROP_TIME,
   DROP_TIME_INCR,
+  GameMode,
   INITAL_ROWS,
   INITIAL_LEVEL,
   INITIAL_SCORE,
@@ -28,7 +29,11 @@ function SinglePlayer() {
   const { piece, updatePiecePosition, resetPiece, pieceRotate } = usePiece(
     getRandomTetromino().shape
   );
-  const { stage, setStage, rowsCleared } = useStage(piece, resetPiece);
+  const { stage, setStage, rowsCleared } = useStage(
+    piece,
+    resetPiece,
+    GameMode.SINGLE_PLAYER
+  );
   const { score, setScore, rows, setRows, level, setLevel } =
     useGameStatus(rowsCleared);
   const gameAreaRef = useRef<HTMLDivElement>(null);
@@ -47,7 +52,7 @@ function SinglePlayer() {
 
     setStage(createStage());
     setDropTime(BASE_DROP_TIME);
-    resetPiece();
+    resetPiece(null);
     setGameOver(false);
     setScore(INITIAL_SCORE);
     setRows(INITAL_ROWS);
