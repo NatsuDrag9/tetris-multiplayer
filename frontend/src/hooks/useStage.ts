@@ -18,7 +18,8 @@ const useStage = (
 ) => {
   const [stage, setStage] = useState(createStage());
   const [rowsCleared, setRowsCleared] = useState(INITIAL_ROWS_CLEARED);
-  const { userSelectedTetromino } = useMultiplayerGameContext();
+  const { userSelectedTetromino, updateStartTimer } =
+    useMultiplayerGameContext();
 
   useEffect(() => {
     setRowsCleared(0);
@@ -66,6 +67,7 @@ const useStage = (
           resetPiece(null);
         } else if (gameMode === GameMode.MULTI_PLAYER) {
           resetPiece(userSelectedTetromino);
+          updateStartTimer(true);
         }
         return clearRows(newStage);
       }
@@ -74,7 +76,7 @@ const useStage = (
     };
 
     setStage((prev) => updateStage(prev));
-  }, [piece, resetPiece, gameMode, userSelectedTetromino]);
+  }, [piece, resetPiece, gameMode, userSelectedTetromino, updateStartTimer]);
 
   return {
     stage,

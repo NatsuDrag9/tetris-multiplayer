@@ -104,3 +104,7 @@ export const CODE_TIMEOUT = 10; // in sec
 
 // Game Room timeouts
 export const TURN_TIMER = 30; // Wait for 30 sec to make a move
+
+// Multiplayer game
+export const MAX_TURNS = 10;
+export const INIITAL_PENALTIES = 0;

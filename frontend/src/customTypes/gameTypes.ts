@@ -18,3 +18,10 @@ export interface GameRoomDetails {
   entryCode: string;
   player: string;
 }
+
+export interface Player {
+  playerName: string;
+  score: number;
+  turnsRemaining: number;
+  penalties: number;
+}

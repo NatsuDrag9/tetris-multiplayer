@@ -1,16 +1,19 @@
 import {
+  GameMode,
   INITAL_ROWS,
   INITIAL_LEVEL,
   INITIAL_SCORE,
   LINE_POINTS,
 } from '@constants/game';
+import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import { useState, useEffect, useCallback } from 'react';
 
 // eslint-disable-next-line implicit-arrow-linebreak
-const useGameStatus = (rowsCleared: number) => {
+const useGameStatus = (rowsCleared: number, gameMode: string) => {
   const [score, setScore] = useState<number>(INITIAL_SCORE);
   const [rows, setRows] = useState<number>(INITAL_ROWS);
   const [level, setLevel] = useState<number>(INITIAL_LEVEL);
+  const { updateScore } = useMultiplayerGameContext();
 
   // Calculates the score
   const calculateScore = useCallback(() => {
@@ -23,7 +26,10 @@ const useGameStatus = (rowsCleared: number) => {
 
   useEffect(() => {
     calculateScore();
-  }, [calculateScore, rowsCleared, score]);
+    if (gameMode === GameMode.MULTI_PLAYER) {
+      updateScore(score);
+    }
+  }, [calculateScore, rowsCleared, score, updateScore, gameMode]);
 
   return {
     score,

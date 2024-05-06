@@ -26,14 +26,18 @@ function SinglePlayer() {
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [gamePaused, setGamePaused] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const { piece, updatePiecePosition, resetPiece, pieceRotate } = usePiece();
+  const { piece, updatePiecePosition, resetPiece, pieceRotate } = usePiece(
+    GameMode.SINGLE_PLAYER
+  );
   const { stage, setStage, rowsCleared } = useStage(
     piece,
     resetPiece,
     GameMode.SINGLE_PLAYER
   );
-  const { score, setScore, rows, setRows, level, setLevel } =
-    useGameStatus(rowsCleared);
+  const { score, setScore, rows, setRows, level, setLevel } = useGameStatus(
+    rowsCleared,
+    GameMode.SINGLE_PLAYER
+  );
   const gameAreaRef = useRef<HTMLDivElement>(null);
 
   // Move the piece if no collision occurs

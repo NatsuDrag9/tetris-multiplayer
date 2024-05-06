@@ -4,7 +4,6 @@ import DisplayLabel from '@components/DisplayLabel/DisplayLabel';
 import { StageType } from '@customTypes/gameTypes';
 import { STAGE_HEIGHT, STAGE_WIDTH } from '@constants/game';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
-import { TetrominoShape } from '@customTypes/tetromonoTypes';
 import SelectTetromino from '@components/SelectTetromino/SelectTetromino';
 
 interface GameAreaPropsType {
@@ -17,8 +16,8 @@ interface GameAreaPropsType {
   gamePaused?: boolean;
   gameStarted: boolean;
   isMultiplayer?: boolean;
-  onTetrominoSelect?: (tetromino: TetrominoShape) => void;
-  onTimerEnded?: (ended: boolean) => void;
+  // onTetrominoSelect?: (tetromino: TetrominoShape) => void;
+  // onTimerEnded?: (ended: boolean) => void;
 }
 
 function GameArea({
@@ -31,18 +30,18 @@ function GameArea({
   gamePaused,
   gameStarted,
   isMultiplayer,
-  onTetrominoSelect,
-  onTimerEnded,
+  // onTetrominoSelect,
+  // onTimerEnded,
 }: GameAreaPropsType) {
   const handleButtonClick = () => {
     onButtonClick();
   };
 
-  const handleTimerEnded = (ended: boolean) => {
-    if (onTimerEnded) {
-      onTimerEnded(ended);
-    }
-  };
+  // const handleTimerEnded = (ended: boolean) => {
+  //   if (onTimerEnded) {
+  //     onTimerEnded(ended);
+  //   }
+  // };
 
   const renderGameInfo = () => {
     if (isMultiplayer) {
@@ -51,8 +50,8 @@ function GameArea({
           {!gameOver ? (
             <>
               <SelectTetromino
-                onSelectedTetromino={onTetrominoSelect}
-                onTimerEnd={handleTimerEnded}
+                // onSelectedTetromino={onTetrominoSelect}
+                // onTimerEnd={handleTimerEnded}
               />
               <DisplayLabel
                 gameOver={gameOver}
@@ -155,7 +154,7 @@ export default GameArea;
 
 GameArea.defaultProps = {
   isMultiplayer: false,
-  onTimerEnded: (_ended: boolean) => {},
-  onTetrominoSelect: () => {},
+  // onTimerEnded: (_ended: boolean) => {},
+  // onTetrominoSelect: () => {},
   gamePaused: false,
 };

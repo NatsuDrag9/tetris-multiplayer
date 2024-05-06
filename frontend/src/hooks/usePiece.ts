@@ -1,5 +1,6 @@
-import { STAGE_WIDTH } from '@constants/game';
+import { GameMode, STAGE_WIDTH } from '@constants/game';
 import { TETROMINOES } from '@constants/tetrominoes';
+import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
@@ -7,12 +8,14 @@ import { checkCollision } from '@utils/game-helpers';
 import getRandomTetromino from '@utils/get-random-tetromino';
 import { useCallback, useState } from 'react';
 
-const usePiece = () => {
+const usePiece = (gameMode: string) => {
   const [piece, setPiece] = useState<Piece>({
     position: { x: 0, y: 0 },
     tetromino: TETROMINOES[0].shape,
     collided: false,
   });
+  const { increasePenalty, updatePenaltyIncurred } =
+    useMultiplayerGameContext();
 
   // Rotates the tetromino
   const rotate = (matrix: TetrominoShape, direction: number) => {
@@ -75,15 +78,34 @@ const usePiece = () => {
     }));
   };
 
+  const performTurnTasks = useCallback(
+    (tetromino: TetrominoShape | null): TetrominoShape => {
+      if (gameMode === GameMode.MULTI_PLAYER) {
+        if (tetromino !== null) {
+          updatePenaltyIncurred(false);
+          return tetromino;
+        }
+        updatePenaltyIncurred(true);
+        increasePenalty();
+        return getRandomTetromino().shape;
+      }
+      return tetromino !== null ? tetromino : getRandomTetromino().shape;
+    },
+    [gameMode, increasePenalty, updatePenaltyIncurred]
+  );
+
   // Resets the piece state. Callback doesn't depend on
   // anything because the function is only called once
-  const resetPiece = useCallback((tetromino: TetrominoShape | null) => {
-    setPiece({
-      position: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-      tetromino: tetromino !== null ? tetromino : getRandomTetromino().shape,
-      collided: false,
-    });
-  }, []);
+  const resetPiece = useCallback(
+    (tetromino: TetrominoShape | null) => {
+      setPiece({
+        position: { x: STAGE_WIDTH / 2 - 2, y: 0 },
+        tetromino: performTurnTasks(tetromino),
+        collided: false,
+      });
+    },
+    [performTurnTasks]
+  );
 
   return {
     piece,
