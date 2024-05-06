@@ -26,9 +26,7 @@ function SinglePlayer() {
   const [gameOver, setGameOver] = useState<boolean>(false);
   const [gamePaused, setGamePaused] = useState<boolean>(false);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
-  const { piece, updatePiecePosition, resetPiece, pieceRotate } = usePiece(
-    getRandomTetromino().shape
-  );
+  const { piece, updatePiecePosition, resetPiece, pieceRotate } = usePiece();
   const { stage, setStage, rowsCleared } = useStage(
     piece,
     resetPiece,
