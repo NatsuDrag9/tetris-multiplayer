@@ -17,11 +17,7 @@ import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import getRandomTetromino from '@utils/get-random-tetromino';
 import formatTime from '@utils/date-time-utils';
 
-interface SelectTetrominoProps {
-  startTimer: boolean;
-}
-
-function SelectTetromino({ startTimer }: SelectTetrominoProps) {
+function SelectTetromino() {
   const {
     tetrominoStage,
     switchTetromino,
@@ -29,7 +25,8 @@ function SelectTetromino({ startTimer }: SelectTetrominoProps) {
     selectedTetromino,
     addNewTetrominoToStage,
   } = useTetrominoStage();
-  const { setUserSelectedTetromino } = useMultiplayerGameContext();
+  const { setUserSelectedTetromino, timerState, updateTimerState } =
+    useMultiplayerGameContext();
   const [tetrominoSelected, setTetrmonioSelected] = useState<boolean>(false);
   const [timer, setTimer] = useState(TURN_TIMER);
   const [timerEnded, setTimerEnded] = useState<boolean>(false);
@@ -79,7 +76,7 @@ function SelectTetromino({ startTimer }: SelectTetrominoProps) {
   }, [timerEnded, tetrominoSelected]);
 
   useEffect(() => {
-    if (!tetrominoSelected && startTimer) {
+    if (!tetrominoSelected && timerState) {
       const timerId = setInterval(() => {
         setTimer((prevTime) => {
           const newTime = prevTime - 1;
@@ -93,19 +90,20 @@ function SelectTetromino({ startTimer }: SelectTetrominoProps) {
 
       return () => clearInterval(timerId);
     }
-  }, [startTimer, tetrominoSelected]);
+  }, [timerState, tetrominoSelected]);
 
   useEffect(() => {
-    if (tetrominoSelected && !startTimer) {
+    if (tetrominoSelected && !timerState) {
       setTimer(0);
       setTetrmonioSelected(false);
     }
-  }, [startTimer, tetrominoSelected]);
+  }, [timerState, tetrominoSelected]);
 
   const handleButtonClick = () => {
     setTetrmonioSelected(true);
     setUserSelectedTetromino(selectedTetromino);
     setTimer(0);
+    updateTimerState(false);
   };
 
   return (
