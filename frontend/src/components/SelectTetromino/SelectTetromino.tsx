@@ -33,7 +33,7 @@ function SelectTetromino() {
     updatePenaltyIncurred,
   } = useMultiplayerGameContext();
   const [tetrominoSelected, setTetrmonioSelected] = useState<boolean>(false);
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(TURN_TIMER);
   const [timerEnded, setTimerEnded] = useState<boolean>(false);
   const selectTetrominoRef = useRef<HTMLDivElement>(null);
   let timerId: number;
@@ -109,7 +109,7 @@ function SelectTetromino() {
 
       return () => {
         clearInterval(timerId);
-        setTimer(10);
+        setTimer(TURN_TIMER);
       };
     }
   }, [tetrominoSelected, turn.currentState]);
@@ -119,7 +119,7 @@ function SelectTetromino() {
     setUserSelectedTetromino(selectedTetromino);
     handleTurnStateChange(TurnState.PLAY_TURN);
     clearInterval(timerId);
-    setTimer(10);
+    setTimer(TURN_TIMER);
   };
 
   return (
