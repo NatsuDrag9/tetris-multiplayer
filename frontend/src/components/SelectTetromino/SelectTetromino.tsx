@@ -1,11 +1,12 @@
 import './SelectTetromino.scss';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import useTetrominoStage from '@hooks/useTetrominoStage';
 import {
   TETROMINO_STAGE_HEIGHT,
   TETROMINO_STAGE_WIDTH,
   TURN_TIMER,
+  TurnState,
 } from '@constants/game';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -27,16 +28,21 @@ function SelectTetromino() {
   } = useTetrominoStage();
   const {
     setUserSelectedTetromino,
-    turnTask,
-    updateStartTimer,
-    updateStopTimer,
+    turn,
+    handleTurnStateChange,
+    updatePenaltyIncurred,
   } = useMultiplayerGameContext();
   const [tetrominoSelected, setTetrmonioSelected] = useState<boolean>(false);
-  const [timer, setTimer] = useState(TURN_TIMER);
+  const [timer, setTimer] = useState(10);
   const [timerEnded, setTimerEnded] = useState<boolean>(false);
+  const selectTetrominoRef = useRef<HTMLDivElement>(null);
+  let timerId: number;
 
   useEffect(() => {
     addNewTetrominoToStage();
+    if (selectTetrominoRef.current) {
+      selectTetrominoRef.current.focus();
+    }
   }, []);
 
   useEffect(() => {
@@ -60,10 +66,14 @@ function SelectTetromino() {
       }
     };
 
-    document.addEventListener('keydown', handleKeyPress);
+    if (turn.currentState === TurnState.SELECT_TETROMINO) {
+      document.addEventListener('keydown', handleKeyPress);
+    }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyPress);
+      if (turn.currentState === TurnState.SELECT_TETROMINO) {
+        document.removeEventListener('keydown', handleKeyPress);
+      }
     };
   }, [
     // onSelectedTetromino,
@@ -73,47 +83,47 @@ function SelectTetromino() {
   ]);
 
   useEffect(() => {
-    if (timerEnded && !tetrominoSelected) {
-      setUserSelectedTetromino(getRandomTetromino().shape);
-      setTetrmonioSelected(false);
-      updateStartTimer(false);
-    }
-  }, [timerEnded, tetrominoSelected]);
-
-  useEffect(() => {
-    if (!tetrominoSelected && turnTask.startTimer) {
-      const timerId = setInterval(() => {
+    if (turn.currentState === TurnState.SELECT_TETROMINO) {
+      timerId = setInterval(() => {
         setTimer((prevTime) => {
-          const newTime = prevTime - 1;
-          if (newTime === 0) {
+          if (prevTime <= 0) {
             clearInterval(timerId);
             setTimerEnded(true);
-            updateStopTimer(true);
+            handleTurnStateChange(TurnState.PLAY_TURN);
+            return 0;
+          } else {
+            return prevTime - 1;
           }
-          return newTime;
         });
       }, 1000);
 
-      return () => clearInterval(timerId);
-    }
-  }, [tetrominoSelected]);
+      if (tetrominoSelected && !timerEnded) {
+        setTetrmonioSelected(false);
+        updatePenaltyIncurred(true);
+        setTetrmonioSelected(false);
+      } else if (!tetrominoSelected && timerEnded) {
+        setUserSelectedTetromino(getRandomTetromino().shape);
+        updatePenaltyIncurred(true);
+        setTetrmonioSelected(false);
+      }
 
-  useEffect(() => {
-    if (tetrominoSelected && !turnTask.startTimer) {
-      setTimer(0);
-      setTetrmonioSelected(false);
+      return () => {
+        clearInterval(timerId);
+        setTimer(10);
+      };
     }
-  }, [turnTask.startTimer, tetrominoSelected]);
+  }, [tetrominoSelected, turn.currentState]);
 
   const handleButtonClick = () => {
     setTetrmonioSelected(true);
     setUserSelectedTetromino(selectedTetromino);
-    setTimer(0);
-    updateStartTimer(false);
+    handleTurnStateChange(TurnState.PLAY_TURN);
+    clearInterval(timerId);
+    setTimer(10);
   };
 
   return (
-    <div className="select-tetromino">
+    <div className="select-tetromino" ref={selectTetrominoRef}>
       <div className="stage-wrapper">
         <FontAwesomeIcon
           icon={faChevronLeft}
