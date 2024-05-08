@@ -30,10 +30,6 @@ const useTetrominoStage = () => {
   }, [selectedTetrominoIndex]);
 
   useEffect(() => {
-    addNewTetrominoToStage();
-  }, [addNewTetrominoToStage]);
-
-  useEffect(() => {
     updateTetrominoStage(selectedTetromino);
   }, [selectedTetrominoIndex, selectedTetromino]);
 
@@ -44,7 +40,7 @@ const useTetrominoStage = () => {
       if (newIndex < 1) {
         newIndex = TETROMINO_IDENTIFIERS.length - 1;
       } else if (newIndex >= TETROMINO_IDENTIFIERS.length) {
-        newIndex = 1;
+        newIndex = 0;
       }
       setSelectedTetromino(TETROMINOES[TETROMINO_IDENTIFIERS[newIndex]].shape);
       return newIndex;
