@@ -145,7 +145,7 @@ function MultiPlayerGameRoom() {
         updatePiecePosition({ x: 0, y: 1, collided: false });
       } else {
         // Game over when collision occurs at the top
-        if (piece.position.y < 1) {
+        if (piece.position.y < 1 || playerInfo.turnsRemaining === 0) {
           setGameOver(true);
           // setGameStarted(false);
           setDropTime(null);

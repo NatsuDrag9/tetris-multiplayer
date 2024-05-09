@@ -165,7 +165,10 @@ export const MultiplayerGameProvider: React.FC<
     } else if (turn.currentState === TurnState.END_TURN) {
       // Game paused in <MultiplayerGameRoom />
       // Nothing else to do here
-      logInDev('turn state: end turn');
+      logInDev(
+        'turn state: end turn and turns remaining: ',
+        playerInfo.turnsRemaining
+      );
       updatePenaltyIncurred(false);
     }
   }, [turn.currentState]);

@@ -5,6 +5,8 @@ import { StageType } from '@customTypes/gameTypes';
 import { STAGE_HEIGHT, STAGE_WIDTH } from '@constants/game';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import SelectTetromino from '@components/SelectTetromino/SelectTetromino';
+import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
+import GameAreaPopup from '@components/GameArea/GameAreaPopup';
 
 interface GameAreaPropsType {
   stage: StageType;
@@ -33,6 +35,7 @@ function GameArea({
   // onTetrominoSelect,
   // onTimerEnded,
 }: GameAreaPropsType) {
+  const { playerInfo } = useMultiplayerGameContext();
   const handleButtonClick = () => {
     if (onButtonClick) {
       onButtonClick();
@@ -58,13 +61,13 @@ function GameArea({
               <DisplayLabel
                 gameOver={gameOver}
                 labelName="Rows: "
-                labelContent={rows.toString()}
+                labelContent={(rows / 2).toString()}
               />
-              {/* <DisplayLabel
+              <DisplayLabel
                 gameOver={gameOver}
-                labelName="Level: "
-                labelContent={currentLevel.toString()}
-              /> */}
+                labelName="Turns Left: "
+                labelContent={playerInfo.turnsRemaining.toString()}
+              />
               <DisplayLabel
                 gameOver={gameOver}
                 labelName="Score: "
@@ -132,22 +135,34 @@ function GameArea({
 
   return (
     <div className="game-area">
-      <section
-        className="game-area__game"
-        // Replace this with stage.length and stage[0].length respectively later when stage is defined
-        style={{
-          '--stageHeight': `${STAGE_HEIGHT}`,
-          '--stageWidth': `${STAGE_WIDTH}`,
-        }}
-      >
-        {/* This is where tetrominoes will fall */}
-        {stage.map((row) =>
-          row.map((cell, x) => {
-            return <TetrominoCell key={x} tetrominoType={cell[0]} />;
-          })
-        )}
-      </section>
-      {renderGameInfo()}
+      {isMultiplayer && gameOver ? (
+        <div className="game-area__popup-wrapper">
+          <GameAreaPopup
+            rows={rows / 2}
+            penalties={playerInfo.penalties}
+            score={playerInfo.score}
+          />
+        </div>
+      ) : (
+        <>
+          <section
+            className="game-area__game"
+            // Replace this with stage.length and stage[0].length respectively later when stage is defined
+            style={{
+              '--stageHeight': `${STAGE_HEIGHT}`,
+              '--stageWidth': `${STAGE_WIDTH}`,
+            }}
+          >
+            {/* This is where tetrominoes will fall */}
+            {stage.map((row) =>
+              row.map((cell, x) => {
+                return <TetrominoCell key={x} tetrominoType={cell[0]} />;
+              })
+            )}
+          </section>
+          {renderGameInfo()}
+        </>
+      )}
     </div>
   );
 }
