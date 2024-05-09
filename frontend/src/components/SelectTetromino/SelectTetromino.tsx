@@ -99,7 +99,7 @@ function SelectTetromino() {
 
       if (tetrominoSelected && !timerEnded) {
         setTetrmonioSelected(false);
-        updatePenaltyIncurred(true);
+        updatePenaltyIncurred(false);
         setTetrmonioSelected(false);
       } else if (!tetrominoSelected && timerEnded) {
         setUserSelectedTetromino(getRandomTetromino().shape);
