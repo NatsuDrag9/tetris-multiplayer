@@ -1,6 +1,5 @@
 import { GameMode, STAGE_WIDTH } from '@constants/game';
 import { TETROMINOES } from '@constants/tetrominoes';
-import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
@@ -14,8 +13,6 @@ const usePiece = (gameMode: string) => {
     tetromino: TETROMINOES[0].shape,
     collided: false,
   });
-  const { increasePenalty, updatePenaltyIncurred } =
-    useMultiplayerGameContext();
 
   // Rotates the tetromino
   const rotate = (matrix: TetrominoShape, direction: number) => {
@@ -78,33 +75,35 @@ const usePiece = (gameMode: string) => {
     }));
   };
 
-  const performTurnTasks = useCallback(
-    (tetromino: TetrominoShape | null): TetrominoShape => {
-      if (gameMode === GameMode.MULTI_PLAYER) {
-        if (tetromino !== null) {
-          updatePenaltyIncurred(false);
-          return tetromino;
-        }
-        updatePenaltyIncurred(true);
-        increasePenalty();
-        return getRandomTetromino().shape;
-      }
-      return tetromino !== null ? tetromino : getRandomTetromino().shape;
-    },
-    [gameMode, increasePenalty, updatePenaltyIncurred]
-  );
+  // const getTetromino = useCallback(
+  //   (tetromino: TetrominoShape | null): TetrominoShape => {
+  //     if (gameMode === GameMode.MULTI_PLAYER && tetromino !== null) {
+  //       return tetromino;
+  //     }
+  //     return getRandomTetromino().shape;
+  //   },
+  //   []
+  // );
 
   // Resets the piece state. Callback doesn't depend on
   // anything because the function is only called once
   const resetPiece = useCallback(
     (tetromino: TetrominoShape | null) => {
-      setPiece({
-        position: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-        tetromino: performTurnTasks(tetromino),
-        collided: false,
-      });
+      if (gameMode === GameMode.SINGLE_PLAYER) {
+        setPiece({
+          position: { x: STAGE_WIDTH / 2 - 2, y: 0 },
+          tetromino: getRandomTetromino().shape,
+          collided: false,
+        });
+      } else if (gameMode === GameMode.MULTI_PLAYER && tetromino !== null) {
+        setPiece({
+          position: { x: STAGE_WIDTH / 2 - 2, y: 0 },
+          tetromino,
+          collided: false,
+        });
+      }
     },
-    [performTurnTasks]
+    [gameMode]
   );
 
   return {

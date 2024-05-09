@@ -3,4 +3,24 @@
 
 .multi-player {
   @include game-layout;
+
+  .game-area-wrapper {
+    transition: none;
+    background-color: transparent;
+    width: 62vw;
+    height: 72%; // To match the no. of rows in &__game;
+    margin: 0;
+    // border: 1px solid white;
+    border: none;
+    cursor: default;
+
+    @media (max-width: $screen-width-800) {
+      height: 90%;
+      width: 70vw;
+    }
+  }
+
+  @media (max-width: $screen-width-800) {
+    flex-direction: column;
+  }
 }

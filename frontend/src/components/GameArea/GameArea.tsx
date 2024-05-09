@@ -8,13 +8,13 @@ import SelectTetromino from '@components/SelectTetromino/SelectTetromino';
 
 interface GameAreaPropsType {
   stage: StageType;
-  onButtonClick: () => void;
+  onButtonClick?: () => void;
   gameOver: boolean;
   gameScore: number;
   rows: number;
   currentLevel: number;
   gamePaused?: boolean;
-  gameStarted: boolean;
+  gameStarted?: boolean;
   isMultiplayer?: boolean;
   // onTetrominoSelect?: (tetromino: TetrominoShape) => void;
   // onTimerEnded?: (ended: boolean) => void;
@@ -34,7 +34,9 @@ function GameArea({
   // onTimerEnded,
 }: GameAreaPropsType) {
   const handleButtonClick = () => {
-    onButtonClick();
+    if (onButtonClick) {
+      onButtonClick();
+    }
   };
 
   // const handleTimerEnded = (ended: boolean) => {
@@ -50,19 +52,19 @@ function GameArea({
           {!gameOver ? (
             <>
               <SelectTetromino
-                // onSelectedTetromino={onTetrominoSelect}
-                // onTimerEnd={handleTimerEnded}
+              // onSelectedTetromino={onTetrominoSelect}
+              // onTimerEnd={handleTimerEnded}
               />
               <DisplayLabel
                 gameOver={gameOver}
                 labelName="Rows: "
                 labelContent={rows.toString()}
               />
-              <DisplayLabel
+              {/* <DisplayLabel
                 gameOver={gameOver}
                 labelName="Level: "
                 labelContent={currentLevel.toString()}
-              />
+              /> */}
               <DisplayLabel
                 gameOver={gameOver}
                 labelName="Score: "
@@ -157,4 +159,6 @@ GameArea.defaultProps = {
   // onTimerEnded: (_ended: boolean) => {},
   // onTetrominoSelect: () => {},
   gamePaused: false,
+  gameStarted: false,
+  onButtonClick: () => {},
 };

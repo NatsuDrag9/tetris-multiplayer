@@ -1,9 +1,4 @@
-import {
-  CLEAR_CELL,
-  GameMode,
-  INITIAL_ROWS_CLEARED,
-  MERGE_CELL,
-} from '@constants/game';
+import { CLEAR_CELL, INITIAL_ROWS_CLEARED, MERGE_CELL } from '@constants/game';
 import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import { StageType } from '@customTypes/gameTypes';
 import { Piece } from '@customTypes/pieceTypes';
@@ -18,8 +13,7 @@ const useStage = (
 ) => {
   const [stage, setStage] = useState(createStage());
   const [rowsCleared, setRowsCleared] = useState(INITIAL_ROWS_CLEARED);
-  const { userSelectedTetromino, updateStartTimer } =
-    useMultiplayerGameContext();
+  const { turn, userSelectedTetromino } = useMultiplayerGameContext();
 
   useEffect(() => {
     setRowsCleared(0);
@@ -63,12 +57,15 @@ const useStage = (
       });
 
       if (piece.collided) {
-        if (gameMode === GameMode.SINGLE_PLAYER) {
-          resetPiece(null);
-        } else if (gameMode === GameMode.MULTI_PLAYER) {
-          resetPiece(userSelectedTetromino);
-          updateStartTimer(true);
-        }
+        // if (gameMode === GameMode.SINGLE_PLAYER) {
+        //   resetPiece(null);
+        // } else if (gameMode === GameMode.MULTI_PLAYER) {
+        //   if (turn.currentState === TurnState.PLAY_TURN) {
+        //     // handleTurnStateChange(TurnState.UPDATE_PLAYER_INFO);
+        //     // resetPiece(TETROMINOES[0].shape);
+        //   }
+        // }
+        resetPiece(null);
         return clearRows(newStage);
       }
 
@@ -76,7 +73,7 @@ const useStage = (
     };
 
     setStage((prev) => updateStage(prev));
-  }, [piece, resetPiece, gameMode, userSelectedTetromino, updateStartTimer]);
+  }, [piece, resetPiece, gameMode, userSelectedTetromino, turn.currentState]);
 
   return {
     stage,

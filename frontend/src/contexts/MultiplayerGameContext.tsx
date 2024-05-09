@@ -1,44 +1,58 @@
+import {
+  CommStatus,
+  GameMessage,
+  INIITAL_PENALTIES,
+  INITIAL_SCORE,
+  MAX_TURNS,
+  MessageType,
+  TurnState,
+} from '@constants/game';
 import { Player } from '@customTypes/gameTypes';
 import { TetrominoShape } from '@customTypes/tetromonoTypes';
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { logInDev } from '@utils/log-utils';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { useWebSocketContext } from './WebSocketContext';
 
-interface TurnTask {
-  startTimer: boolean;
-  stopTimer: boolean;
+interface Turn {
+  currentState: TurnState;
   penaltyIncurred: boolean;
 }
 
 interface MultiplayerGameContextProps {
   userSelectedTetromino: TetrominoShape | null;
   setUserSelectedTetromino: (tetromino: TetrominoShape | null) => void;
-  playerInfo: Player | null;
-  setInitialPlayerInfo: (newInfo: Player) => void;
+  playerInfo: Player;
+  // setInitialPlayerInfo: (newInfo: Player) => void;
   updateScore: (_newValue: number) => void;
-  increasePenalty: () => void;
-  updateTurnsRemaining: (_newValue: number) => void;
-  turnTask: TurnTask;
-  updateStartTimer: (_newValue: boolean) => void;
+  turn: Turn;
   updatePenaltyIncurred: (_newValue: boolean) => void;
-  updateStopTimer: (_newValue: boolean) => void;
+  handleTurnStateChange: (_newState: TurnState) => void;
 }
 
 export const MultiplayerGameContext =
   createContext<MultiplayerGameContextProps>({
     userSelectedTetromino: null,
     setUserSelectedTetromino: () => {},
-    playerInfo: null,
-    setInitialPlayerInfo: (_newInfo: Player) => {},
+    playerInfo: {
+      playerName: '',
+      turnsRemaining: MAX_TURNS,
+      penalties: INIITAL_PENALTIES,
+      score: INITIAL_SCORE,
+    },
+    // setInitialPlayerInfo: (_newInfo: Player) => {},
     updateScore: (_newValue: number) => {},
-    increasePenalty: () => {},
-    updateTurnsRemaining: (_newValue: number) => {},
-    turnTask: {
-      startTimer: false,
-      stopTimer: false,
+    turn: {
+      currentState: TurnState.SELECT_TETROMINO,
       penaltyIncurred: false,
     },
-    updateStartTimer: (_newValue: boolean) => {},
     updatePenaltyIncurred: (_newValue: boolean) => {},
-    updateStopTimer: (_newValue: boolean) => {},
+    handleTurnStateChange: (_newState: TurnState) => {},
   });
 
 interface MultiplayerGameProviderProps {
@@ -50,73 +64,111 @@ export const MultiplayerGameProvider: React.FC<
 > = ({ children }) => {
   const [userSelectedTetromino, setUserSelectedTetromino] =
     useState<TetrominoShape | null>(null);
-  const [playerInfo, setPlayerInfo] = useState<Player | null>(null);
-  const [turnTask, setTurnTask] = useState<TurnTask>({
-    startTimer: false,
-    stopTimer: false,
+  const [playerInfo, setPlayerInfo] = useState<Player>({
+    playerName: '',
+    turnsRemaining: MAX_TURNS,
+    penalties: INIITAL_PENALTIES,
+    score: INITIAL_SCORE,
+  });
+  const [turn, setTurn] = useState<Turn>({
+    currentState: TurnState.SELECT_TETROMINO,
     penaltyIncurred: false,
   });
+  const { isConnectedToServer, gameRoomDetails, sendMessage } =
+    useWebSocketContext();
 
-  const setInitialPlayerInfo = (newPlayer: Player) => {
-    setPlayerInfo(newPlayer);
+  useEffect(() => {
+    if (isConnectedToServer && gameRoomDetails !== null) {
+      setPlayerInfo({
+        playerName: gameRoomDetails.player,
+        turnsRemaining: MAX_TURNS,
+        penalties: INIITAL_PENALTIES,
+        score: INITIAL_SCORE,
+      });
+    }
+  }, []);
+
+  // const setInitialPlayerInfo = (newPlayer: Player) => {
+  //   setPlayerInfo(newPlayer);
+  // };
+
+  const updatePenaltyIncurred = (newValue: boolean) => {
+    setTurn((prevTurn) => ({
+      ...prevTurn,
+      penaltyIncurred: newValue,
+    }));
   };
 
   const updateScore = (newValue: number) => {
     setPlayerInfo((prevState) => {
-      if (prevState !== null) {
-        return {
-          ...prevState,
-          score: newValue,
-        };
-      }
-      return null;
+      return {
+        ...prevState,
+        score: newValue,
+      };
     });
   };
 
   const increasePenalty = () => {
     setPlayerInfo((prevState) => {
-      if (prevState !== null) {
-        return {
-          ...prevState,
-          penalties: prevState.penalties + 1,
-        };
-      }
-      return null;
+      return {
+        ...prevState,
+        penalties: prevState.penalties + 1,
+      };
     });
   };
 
-  const updateTurnsRemaining = (newValue: number) => {
+  const decrementTurnsRemaining = () => {
     setPlayerInfo((prevState) => {
-      if (prevState !== null) {
-        return {
-          ...prevState,
-          turnsRemaining: newValue,
-        };
-      }
-      return null;
+      return {
+        ...prevState,
+        turnsRemaining: prevState.turnsRemaining - 1,
+      };
     });
   };
 
-  const updateStartTimer = (newValue: boolean) => {
-    setTurnTask((prevState) => ({
-      ...prevState,
-      startTimer: newValue,
-    }));
+  const handleTurnStateChange = (newState: TurnState) => {
+    setTurn((prevState) => ({ ...prevState, currentState: newState }));
   };
 
-  const updateStopTimer = (newValue: boolean) => {
-    setTurnTask((prevState) => ({
-      ...prevState,
-      stopTimer: newValue,
-    }));
-  };
+  useEffect(() => {
+    if (turn.currentState === TurnState.SELECT_TETROMINO) {
+      // Timer begins in <SelectTetromino /> and state is changed to PLAY_TURN when user clicks USE TETROMINO button or timer expires
+      // Nothing else to do here
+      logInDev('turn state: select tetromino');
+    } else if (turn.currentState === TurnState.PLAY_TURN) {
+      // Game resumed with appropriate drop rate in <MultiplayerGameRoom />
 
-  const updatePenaltyIncurred = (newValue: boolean) => {
-    setTurnTask((prevState) => ({
-      ...prevState,
-      penaltyIncurred: newValue,
-    }));
-  };
+      // Increase penalty in playerInfo if penaltyIncurred is true
+      if (turn.penaltyIncurred) {
+        increasePenalty();
+      }
+      logInDev('turn state: play turn');
+
+      // State is changed to UPDATE_PLAYER_INFO when collision occurs in usePiece hook
+      // Nothing else to do here
+    } else if (turn.currentState === TurnState.UPDATE_PLAYER_INFO) {
+      logInDev('turn state: update player info');
+      // Update turns remaining in playerInfo
+      decrementTurnsRemaining();
+      if (gameRoomDetails !== null) {
+        sendMessage({
+          messageType: MessageType.GAME_MESSAGE,
+          messageName: GameMessage.TURN_INFO,
+          isConnectedToServer: isConnectedToServer,
+          messageBody: JSON.stringify(playerInfo),
+          player: gameRoomDetails?.player,
+          commStatus: CommStatus.IN_GAME_ROOM,
+        });
+      }
+      handleTurnStateChange(TurnState.END_TURN);
+      // Nothing else to do here
+    } else if (turn.currentState === TurnState.END_TURN) {
+      // Game paused in <MultiplayerGameRoom />
+      // Nothing else to do here
+      logInDev('turn state: end turn');
+      updatePenaltyIncurred(false);
+    }
+  }, [turn.currentState]);
 
   return (
     <MultiplayerGameContext.Provider
@@ -124,14 +176,11 @@ export const MultiplayerGameProvider: React.FC<
         userSelectedTetromino,
         setUserSelectedTetromino,
         playerInfo,
-        setInitialPlayerInfo,
-        increasePenalty,
+        // setInitialPlayerInfo,
         updateScore,
-        updateTurnsRemaining,
-        turnTask,
+        turn,
         updatePenaltyIncurred,
-        updateStartTimer,
-        updateStopTimer,
+        handleTurnStateChange,
       }}
     >
       {children}

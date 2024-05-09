@@ -72,7 +72,9 @@ export const CommMessage = {
   GAME_OVER: 'GAME_OVER',
   PLAY_GAME: 'PLAY_GAME', // Server sends to the client who entered game room
 };
-export const GameMessage = {};
+export const GameMessage = {
+  TURN_INFO: 'TURN_INFO',
+};
 export const ErrorMessage = {
   CLIENT_TIMEOUT_ERROR: 'CLIENT_TIMEOUT_ERROR',
   COMM_ERROR: 'COMMUNICATION_ERROR',
@@ -108,3 +110,11 @@ export const TURN_TIMER = 30; // Wait for 30 sec to make a move
 // Multiplayer game
 export const MAX_TURNS = 10;
 export const INIITAL_PENALTIES = 0;
+
+// Turn state machine
+export enum TurnState {
+  SELECT_TETROMINO,
+  PLAY_TURN,
+  UPDATE_PLAYER_INFO,
+  END_TURN,
+}
