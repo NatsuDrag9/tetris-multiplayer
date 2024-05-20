@@ -12,13 +12,18 @@ import {
   CommMessage,
   CommStatus,
   ErrorMessage,
+  GameMessage,
   MAX_GAME_ROOMS,
   MAX_TURNS,
   MessageType,
   PLAYER_ONE,
   PLAYER_TWO,
 } from '@src/constants/appConstants';
-import { removeClientFromList, resetGameRoom } from '@utils/game-utils';
+import {
+  determineWinner,
+  removeClientFromList,
+  resetGameRoom,
+} from '@utils/game-utils';
 
 // Counter to uniquely identify each client
 let clientIdCounter: number = 0;
@@ -94,13 +99,14 @@ function handleCommunicationMessages(
               },
               playerTwoInfo: {
                 penalties: 0,
-                playerName: PLAYER_ONE,
+                playerName: PLAYER_TWO,
                 score: 0,
                 turnsRemaining: MAX_TURNS,
               },
               wsPlayerOne: matchedPlayerOne.wsClient,
               wsPlayerTwo: ws,
               roomId: gameRoomIdCounter,
+              waitingPlayer: null,
             };
             availableGameRooms.push(gameRoom);
 
@@ -174,10 +180,130 @@ function handleCommunicationMessages(
         // Acknowledging entry and sending a response
         const response = {
           ...message,
-          messageName: CommMessage.PLAY_GAME,
+          messageTye: MessageType.GAME_MESSAGE,
+          messageName: GameMessage.PLAY_GAME,
           messageBody: 'Welcome! Get ready to play',
         };
         ws.send(JSON.stringify(response));
+        break;
+      case GameMessage.TURN_INFO:
+        const parsedMessage = JSON.parse(message.messageBody);
+        const matchedIndex = availableGameRooms.findIndex(
+          (gameRoom: GameRoom) => gameRoom.roomId === parsedMessage.roomId
+        );
+        if (parsedMessage.playerName === PLAYER_ONE) {
+          availableGameRooms[matchedIndex].playerOneInfo = {
+            playerName: parsedMessage.playerName,
+            score: parsedMessage.score,
+            turnsRemaining: parsedMessage.turnsRemaining,
+            penalties: parsedMessage.penalties,
+          };
+        } else if (parsedMessage.playerName === PLAYER_TWO) {
+          availableGameRooms[matchedIndex].playerTwoInfo = {
+            playerName: parsedMessage.playerName,
+            score: parsedMessage.score,
+            turnsRemaining: parsedMessage.turnsRemaining,
+            penalties: parsedMessage.penalties,
+          };
+        }
+        logInDev(
+          'Turn info: ',
+          availableGameRooms[matchedIndex].playerOneInfo,
+          availableGameRooms[matchedIndex].playerTwoInfo,
+          availableGameRooms[matchedIndex].roomId
+        );
+        break;
+      case GameMessage.GAME_OVER:
+        const gameRoomDetails = JSON.parse(message.messageBody);
+        const matchedRoomIndex = availableGameRooms.findIndex(
+          (gameRoom: GameRoom) => gameRoom.roomId === gameRoomDetails.roomId
+        );
+        const gameRoom = availableGameRooms[matchedRoomIndex];
+
+        const matchedPlayerOne =
+          allPlayerOnes[
+            allPlayerOnes.findIndex(
+              (playerOne) => playerOne.wsClient === gameRoom.wsPlayerOne
+            )
+          ];
+
+        const matchedPlayerTwo =
+          allPlayerTwos[
+            allPlayerTwos.findIndex(
+              (playerTwo) => playerTwo.wsClient === gameRoom.wsPlayerTwo
+            )
+          ];
+        if (
+          gameRoom.playerOneInfo.turnsRemaining > 0 &&
+          gameRoom.playerTwoInfo.turnsRemaining === 0
+        ) {
+          // Send player two message that player one is still playing
+          availableGameRooms[matchedRoomIndex].waitingPlayer = PLAYER_TWO;
+          matchedPlayerTwo.wsClient.send(
+            JSON.stringify({
+              messageType: MessageType.GAME_MESSAGE,
+              messageName: GameMessage.WINNER,
+              isConnectedToServer: true,
+              messageBody: 'Waiting for your opponent to finish',
+              player: PLAYER_TWO,
+              commStatus: CommStatus.IN_GAME_ROOM,
+            })
+          );
+        } else if (
+          gameRoom.playerOneInfo.turnsRemaining === 0 &&
+          gameRoom.playerTwoInfo.turnsRemaining > 0
+        ) {
+          availableGameRooms[matchedRoomIndex].waitingPlayer = PLAYER_ONE;
+          matchedPlayerOne.wsClient.send(
+            JSON.stringify({
+              messageType: MessageType.GAME_MESSAGE,
+              messageName: GameMessage.WAITING_PLAYER,
+              isConnectedToServer: true,
+              messageBody: 'Waiting for your opponent to finish',
+              player: PLAYER_ONE,
+              commStatus: CommStatus.IN_GAME_ROOM,
+            })
+          );
+        }
+
+        // Check if both players have finished their turns
+        if (
+          gameRoom.playerOneInfo.turnsRemaining === 0 &&
+          gameRoom.playerTwoInfo.turnsRemaining === 0
+        ) {
+          const winner = determineWinner(
+            gameRoom.playerOneInfo.score,
+            gameRoom.playerOneInfo.penalties,
+            gameRoom.playerTwoInfo.score,
+            gameRoom.playerTwoInfo.penalties
+          );
+
+          const winnerMessage = JSON.stringify({
+            messageType: MessageType.GAME_MESSAGE,
+            messageName: GameMessage.WINNER,
+            isConnectedToServer: true,
+            messageBody: `${winner}`,
+            commStatus: CommStatus.IN_GAME_ROOM,
+          });
+
+          // Send the winner message to both players
+          matchedPlayerOne.wsClient.send(
+            JSON.stringify({
+              ...JSON.parse(winnerMessage),
+              player: PLAYER_ONE,
+            })
+          );
+
+          matchedPlayerTwo.wsClient.send(
+            JSON.stringify({
+              ...JSON.parse(winnerMessage),
+              player: PLAYER_TWO,
+            })
+          );
+
+          // Reset the waitingPlayer key of the current gameRoom
+          availableGameRooms[matchedRoomIndex].waitingPlayer = null;
+        }
         break;
       default:
         break;
@@ -237,9 +363,10 @@ function handleWebSocketConnections(server: Server) {
 
       try {
         const parsedMessage: WebSocketMessage = JSON.parse(message.toString());
-        if (parsedMessage.messageType === MessageType.COMM_MESSAGE) {
-          handleCommunicationMessages(parsedMessage, ws, wss, clientIdCounter);
-        }
+        // if (parsedMessage.messageType === MessageType.COMM_MESSAGE) {
+        //   handleCommunicationMessages(parsedMessage, ws, wss, clientIdCounter);
+        // }
+        handleCommunicationMessages(parsedMessage, ws, wss, clientIdCounter);
       } catch (error) {
         logErrorInDev('Error parsing WebSocket message:', error);
       }

@@ -100,6 +100,7 @@ export const MultiplayerGameProvider: React.FC<
   };
 
   const updateScore = (newValue: number) => {
+    logInDev('score: ', newValue);
     setPlayerInfo((prevState) => {
       return {
         ...prevState,
@@ -150,18 +151,28 @@ export const MultiplayerGameProvider: React.FC<
       logInDev('turn state: update player info');
       // Update turns remaining in playerInfo
       decrementTurnsRemaining();
+      handleTurnStateChange(TurnState.SEND_MESSAGE);
+      // Nothing else to do here
+    } else if (turn.currentState === TurnState.SEND_MESSAGE) {
+      // Send message when turnsRemaining = 0 after updating player info
       if (gameRoomDetails !== null) {
-        sendMessage({
-          messageType: MessageType.GAME_MESSAGE,
-          messageName: GameMessage.TURN_INFO,
-          isConnectedToServer: isConnectedToServer,
-          messageBody: JSON.stringify(playerInfo),
-          player: gameRoomDetails?.player,
-          commStatus: CommStatus.IN_GAME_ROOM,
-        });
+        const message = {
+          roomId: gameRoomDetails.roomId,
+          ...playerInfo,
+        };
+        logInDev('turn message: ', message);
+        if (playerInfo.turnsRemaining === 0) {
+          sendMessage({
+            messageType: MessageType.GAME_MESSAGE,
+            messageName: GameMessage.TURN_INFO,
+            isConnectedToServer: isConnectedToServer,
+            messageBody: JSON.stringify(message),
+            player: gameRoomDetails?.player,
+            commStatus: CommStatus.IN_GAME_ROOM,
+          });
+        }
       }
       handleTurnStateChange(TurnState.END_TURN);
-      // Nothing else to do here
     } else if (turn.currentState === TurnState.END_TURN) {
       // Game paused in <MultiplayerGameRoom />
       // Nothing else to do here

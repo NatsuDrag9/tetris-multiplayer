@@ -1,4 +1,4 @@
-import { MessageType } from '@constants/game';
+import { GameMessage, MessageType } from '@constants/game';
 import { GameRoomDetails, WebSocketMessage } from '@customTypes/gameTypes';
 import getNumberAfterColon from '@utils/get-number-after-colon';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
@@ -18,6 +18,7 @@ interface WebSocketContextValue {
   gameMessages: WebSocketMessage[];
   setCurrentPlayer: (playerName: string) => void;
   gameRoomDetails: GameRoomDetails | null;
+  getWinner: () => string;
   updateGameRoomDetails: (messageBody: string, code: string) => void;
 }
 
@@ -112,6 +113,14 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     setIsConnectedToServer(false);
   };
 
+  const getWinner = (): string => {
+    const index = gameMessages.findIndex(
+      (message) => message.messageName === GameMessage.WINNER
+    );
+    // Body of this message type contains winner name
+    return index !== -1 ? gameMessages[index].messageBody : 'Please wait...';
+  };
+
   const updateGameRoomDetails = (messageBody: string, code: string) => {
     const roomId = getNumberAfterColon(messageBody);
     if (roomId === null) {
@@ -134,6 +143,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     gameRoomDetails,
     updateGameRoomDetails,
     setCurrentPlayer,
+    getWinner,
   };
 
   return (

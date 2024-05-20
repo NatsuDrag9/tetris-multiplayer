@@ -1,4 +1,6 @@
-import { useEffect } from 'react';
+import { CommStatus, GameMessage, MessageType } from '@constants/game';
+import { useWebSocketContext } from '@contexts/WebSocketContext';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface GameAreaPopupProps {
@@ -9,8 +11,20 @@ interface GameAreaPopupProps {
 
 function GameAreaPopup({ rows, penalties, score }: GameAreaPopupProps) {
   const navigate = useNavigate();
+  const { gameRoomDetails, sendMessage, gameMessages } = useWebSocketContext();
+  const [displayMessage, setDisplayMessage] = useState('');
 
   useEffect(() => {
+    if (gameRoomDetails !== null) {
+      sendMessage({
+        messageType: MessageType.GAME_MESSAGE,
+        messageName: GameMessage.GAME_OVER,
+        isConnectedToServer: true,
+        messageBody: JSON.stringify(gameRoomDetails),
+        player: gameRoomDetails.player,
+        commStatus: CommStatus.IN_GAME_ROOM,
+      });
+    }
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         returnToHome();
@@ -23,6 +37,21 @@ function GameAreaPopup({ rows, penalties, score }: GameAreaPopupProps) {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, []);
+
+  useEffect(() => {
+    const winnerMessage = gameMessages.find(
+      (msg) => msg.messageName === GameMessage.WINNER
+    );
+    const waitingMessage = gameMessages.find(
+      (msg) => msg.messageName === GameMessage.WAITING_PLAYER
+    );
+
+    if (winnerMessage) {
+      setDisplayMessage(winnerMessage.messageBody);
+    } else if (waitingMessage) {
+      setDisplayMessage(waitingMessage.messageBody);
+    }
+  }, [gameMessages]);
 
   const returnToHome = () => {
     window.location.reload();
@@ -37,7 +66,7 @@ function GameAreaPopup({ rows, penalties, score }: GameAreaPopupProps) {
         <li className="list__item">Penalties: {penalties}</li>
         <li className="list__item">Score: {score}</li>
       </ul>
-      <p className="score">The winner is: </p>
+      <p className="score">The winner is: {displayMessage}</p>
       <p className="exit">Press ESC to go home</p>
     </div>
   );

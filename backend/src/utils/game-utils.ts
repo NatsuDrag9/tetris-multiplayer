@@ -51,3 +51,27 @@ export function resetGameRoom(client: WebSocket): void {
     availableGameRooms.splice(gameRoomIndex, 1);
   }
 }
+
+export function determineWinner(
+  playerOneScore: number,
+  playerOnePenalties: number,
+  playerTwoScore: number,
+  playerTwoPenalties: number
+) {
+  if (playerOneScore > playerTwoScore) {
+    return PLAYER_ONE;
+  }
+  if (playerOneScore < playerTwoScore) {
+    return PLAYER_TWO;
+  }
+  if (playerOneScore === playerTwoScore) {
+    if (playerOnePenalties < playerTwoPenalties) {
+      return PLAYER_ONE;
+    }
+    if (playerOnePenalties > playerTwoPenalties) {
+      return PLAYER_TWO;
+    }
+    return "It's a draw";
+  }
+  return 'An error occurred when determining the WINNER';
+}

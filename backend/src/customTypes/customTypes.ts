@@ -13,6 +13,7 @@ export interface GameRoom {
   playerTwoInfo: Player;
   wsPlayerOne: WebSocket;
   wsPlayerTwo: WebSocket;
+  waitingPlayer: string | null;
 }
 
 export interface WebSocketMessage {

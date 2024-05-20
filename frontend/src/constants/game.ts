@@ -31,18 +31,6 @@ export const KEY_CODE_UP = 38;
 // Scores taken from web
 export const LINE_POINTS = [40, 100, 300, 1200];
 
-// Web socket for multiplayer
-// export const GameCommMode = {
-//   CODE: 'CODE',
-//   ENTER_CODE: 'ENTER_CODE',
-//   JOIN_GAME_ROOM: 'JOIN_GAME_ROOM',
-// };
-
-// export const PlayerJoined = {
-//   PLAYER_ONE_JOINED: 'PLAYER_ONE_JOINED',
-//   PLAYER_TWO_JOINED: 'PLAYER_TWO_JOINED',
-// };
-
 // Communication constants
 export const CommStatus = {
   IN_GAME_ROOM: 'IN_GAME_ROOM',
@@ -69,11 +57,13 @@ export const CommMessage = {
   READY_TO_SERVE: 'READY_TO_SERVE', // Server sends when a new client connects
   GAME_ROOM_ASSIGNED: 'GAME_ROOM_ASSIGNED',
   GAME_ROOM_UNAVAILABLE: 'GAME_ROOM_UNAVAILABLE',
-  GAME_OVER: 'GAME_OVER',
-  PLAY_GAME: 'PLAY_GAME', // Server sends to the client who entered game room
 };
 export const GameMessage = {
   TURN_INFO: 'TURN_INFO',
+  GAME_OVER: 'GAME_OVER',
+  PLAY_GAME: 'PLAY_GAME', // Server sends to the client who entered game room
+  WINNER: 'WINNER',
+  WAITING_PLAYER: 'WAITING_PLAYER',
 };
 export const ErrorMessage = {
   CLIENT_TIMEOUT_ERROR: 'CLIENT_TIMEOUT_ERROR',
@@ -108,7 +98,7 @@ export const CODE_TIMEOUT = 10; // in sec
 export const TURN_TIMER = 30; // Wait for 30 sec to make a move
 
 // Multiplayer game
-export const MAX_TURNS = 10;
+export const MAX_TURNS = 5;
 export const INIITAL_PENALTIES = 0;
 
 // Turn state machine
@@ -116,5 +106,6 @@ export enum TurnState {
   SELECT_TETROMINO,
   PLAY_TURN,
   UPDATE_PLAYER_INFO,
+  SEND_MESSAGE,
   END_TURN,
 }
