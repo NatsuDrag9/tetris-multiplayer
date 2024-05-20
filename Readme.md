@@ -4,7 +4,7 @@ This is a fullstack tetris multiplayer game built using React and Express.
 
 # Tech Stack
 
-**Frontend** - React + TS + vite app <br />
+**Frontend** - React + TS + vite app. React Router was used for navigation <br />
 **Backend** - Express + TS and Websockets for communication
 
 # Getting Started
