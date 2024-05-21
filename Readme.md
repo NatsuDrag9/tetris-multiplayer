@@ -25,3 +25,19 @@ This application is my extention to **Thomas Weibenfalk's** [How to build Tetris
   - press start 2p by codeman38
   - emulogic by Freaky Fonts
 - Application icon from [svgrepo](https://www.svgrepo.com/svg/283953/tetris)
+
+# Screenshots
+
+## Home screen
+
+<img src="./assets/Game_home_hdpi_mockup.png" alt="single player pc mockup">
+
+## Gameplay
+
+<img src="./assets/Game_single_player_mdpi_mockup.png" alt="single player pc mockup">
+<br >
+
+<img src="./assets/Game_single_player_ipad_mockup.png" alt="single player ipad mockup">
+<br >
+
+<img src="./assets/Game_single_player_mobile_mockup.png" alt="single player mobile mockup">
