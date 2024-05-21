@@ -17,11 +17,14 @@ Tetris Multiplayer is a fullstack web application that allows users to play the 
 _Currently, Tetris Multiplayer is only playable locally on your PC. However, it will soon be deployed on `Vercel` for easy access. Stay tuned for updates on our deployment progress!_
 
 # Documentation
-Potential employers / recruiters, please visit here. <br>
 
-Developers, please visit here <br>
+Potential employers / recruiters, please visit [here](https://github.com/NatsuDrag9/tetris-multiplayer/wiki/Recruiters) <br>
 
-Players / gamers, please visit here <br>
+Developers, please visit [here](https://github.com/NatsuDrag9/tetris-multiplayer/wiki/Developers) <br>
+
+Players / gamers, please visit [here](https://github.com/NatsuDrag9/tetris-multiplayer/wiki/Players) <br>
+
+For those who have spare time, please visit [here](https://github.com/NatsuDrag9/tetris-multiplayer/wiki)
 
 # Credits and References
 
