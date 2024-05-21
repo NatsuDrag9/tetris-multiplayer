@@ -13,5 +13,10 @@
     // border: 1px solid white;
     border: none;
     cursor: default;
+
+    @media (max-width: $screen-width-800) {
+      width: 95%;
+      height: 90%;
+    }
   }
 }

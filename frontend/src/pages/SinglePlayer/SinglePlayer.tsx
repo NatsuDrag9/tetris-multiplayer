@@ -1,7 +1,6 @@
 import GameArea from '@components/GameArea/GameArea';
 import './SinglePlayer.scss';
 import { useEffect, useRef, useState } from 'react';
-import getRandomTetromino from '@utils/get-random-tetromino';
 import useStage from '@hooks/useStage';
 import useGameStatus from '@hooks/useGameStatus';
 import { checkCollision, createStage } from '@utils/game-helpers';
