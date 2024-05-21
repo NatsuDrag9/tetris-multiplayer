@@ -16,6 +16,13 @@ Tetris Multiplayer is a fullstack web application that allows users to play the 
 
 _Currently, Tetris Multiplayer is only playable locally on your PC. However, it will soon be deployed on `Vercel` for easy access. Stay tuned for updates on our deployment progress!_
 
+# Documentation
+Potential employers / recruiters, please visit here. <br>
+
+Developers, please visit here <br>
+
+Players / gamers, please visit here <br>
+
 # Credits and References
 
 This application is my extention to **Thomas Weibenfalk's** [How to build Tetris in React](https://www.youtube.com/watch?v=ZGOaCxX8HIU) tutorial. Link to the [repo](https://github.com/weibenfalk/react-tetris-starter-files). While I drew inspiration from Thomas Weibenfalk's Tetris tutorial, **I expanded upon it by introducing real-time multiplayer capabilities**. By integrating Websockets and developing a backend server with Express and TypeScript, I added a new layer of gameplay, allowing users to compete against friends in real-time. This addition enhances the original single-player experience, offering users a dynamic and interactive multiplayer mode to enjoy together.
