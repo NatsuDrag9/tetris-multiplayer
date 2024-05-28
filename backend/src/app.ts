@@ -1,6 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
-import getRandomCode from '@src/routes/getRandomCode';
+import getRandomCode from '@src/routes/api/getRandomCode';
+import getClientId from '@src/routes/api/generateClientId';
 import serverMiddlewares from './middlewares/serverMiddlewares';
+
+// Main application that generates the game room code and client id
 
 const app = express();
 
@@ -8,15 +11,16 @@ const app = express();
 serverMiddlewares(app);
 
 // Default - home route
-app.get('/', (req, res) => {
+app.get('/', (_req: Request, res: Response) => {
   res.send('Hello! This is the backend of tetris multiplayer by Natsu');
 });
 
 // Application routes
 app.use('/api', getRandomCode);
+app.use('/api', getClientId);
 
 // Catch-all route
-app.use((req, res, next) => {
+app.use((_req: Request, res: Response, next: NextFunction) => {
   const error = new Error('Page Not Found');
   res.status(404);
   next(error);

@@ -73,4 +73,6 @@ export const MAX_TURNS = 5;
 
 export const CLIENT_ACKNOWLEDGMENT_TIMEOUT = 180 * 1000; // Wait for 3 min (in ms)
 
+export const CLIENT_ID_EXPIRY_DURATION = 3600; // one hour
+
 export default CODE_LENGTH;

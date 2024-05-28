@@ -24,6 +24,8 @@ import {
   removeClientFromList,
   resetGameRoom,
 } from '@utils/game-utils';
+import { ClientId } from '@src/dbApp';
+import deleteClientId from '@src/middlewares/clientId';
 
 // Counter to uniquely identify each client
 let clientIdCounter: number = 0;
@@ -324,15 +326,28 @@ function handleWebSocketConnections(server: Server) {
     commStatus: CommStatus.IN_LOBBY,
   };
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', async (ws, req) => {
     clientIdCounter += 1;
     logInDev('New WebSocket connection');
+
+    const clientId = req.headers['sec-websocket-protocol'];
+    try {
+      const doc = await ClientId.findById(clientId);
+      if (!doc) {
+        logInDev('ClientId not found');
+        ws.terminate();
+        return;
+      }
+      logInDev('Client Id: ', doc);
+    } catch (error) {
+      logErrorInDev('An error occurred when finding client in db\n', error);
+    }
 
     // Send initial message to the newly connected client
     ws.send(JSON.stringify(clientMessage));
 
     // Set acknowledgment timeout
-    const acknowledgementTimeout = setTimeout(() => {
+    const acknowledgementTimeout = setTimeout(async () => {
       logInDev('Acknowledgment timeout. Client did not respond.');
 
       // Rremoving the client from lists and resetting game rooms
@@ -350,6 +365,9 @@ function handleWebSocketConnections(server: Server) {
       };
 
       ws.send(JSON.stringify(clientMessageTimeout));
+
+      // Delete the client id from the database
+      await deleteClientId(clientId);
 
       // Automatically disconnect the client
       ws.terminate();
@@ -373,8 +391,10 @@ function handleWebSocketConnections(server: Server) {
     });
 
     // WebSocket close handler
-    ws.on('close', () => {
+    ws.on('close', async () => {
       logInDev('WebSocket connection closed');
+      await deleteClientId(clientId);
+
       clearTimeout(acknowledgementTimeout);
     });
 

@@ -15,9 +15,9 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // GET endpoint to retrieve a game room by ID
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:roomId', async (req: Request, res: Response) => {
   try {
-    const room = await GameRoom.findById(req.params.id);
+    const room = await GameRoom.findById(req.params.roomId);
     if (!room) {
       res.status(404).send();
     }
