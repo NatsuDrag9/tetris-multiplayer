@@ -27,6 +27,6 @@ export interface WebSocketMessage {
 
 export interface LobbyMember {
   wsClient: WebSocket;
-  clientId: number;
+  clientId: string;
   code: string;
 }

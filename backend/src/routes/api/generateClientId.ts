@@ -8,6 +8,7 @@ const router = Router();
 router.get('/generate-client-id', async (_req: Request, res: Response) => {
   const clientId = new ClientId({
     _id: removeHyphensFromUUID(uuidv4()),
+    gameRoomCode: null,
   });
   try {
     await clientId.save();

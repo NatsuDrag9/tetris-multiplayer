@@ -75,4 +75,11 @@ export const CLIENT_ACKNOWLEDGMENT_TIMEOUT = 180 * 1000; // Wait for 3 min (in m
 
 export const CLIENT_ID_EXPIRY_DURATION = 3600; // one hour
 
+// Mongoose DB query constants
+export const QueryStatus = {
+  SUCCESS: 1,
+  FAILURE: 0,
+  ERR: -1,
+};
+
 export default CODE_LENGTH;

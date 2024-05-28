@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { Request, Response } from 'express';
+
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import gameRoomRoutes from '@src/routes/api/gameRoomRoutes';
@@ -59,7 +60,7 @@ const PlayerSchema = new mongoose.Schema({
 });
 
 // MongoDB schema for GameRoom
-const GameRoomSchema = new mongoose.Schema({
+export const GameRoomSchema = new mongoose.Schema({
   roomId: {
     type: Number,
     required: true,
@@ -73,17 +74,30 @@ const GameRoomSchema = new mongoose.Schema({
     type: PlayerSchema,
     required: true,
   },
-  // WebSockets cannot be stored in MongoDB, so references or identifiers should be used
-  // wsPlayerOne: { type: String, required: true },
-  // wsPlayerTwo: { type: String, required: true },
+  playerOneClientId: {
+    type: String,
+    required: true,
+  },
+  playerTwoClientId: {
+    type: String,
+    required: true,
+  },
   waitingPlayer: {
     type: String,
     default: null,
   },
 });
 
-const clientIDSchema = new mongoose.Schema({
+export const clientIDSchema = new mongoose.Schema({
   _id: { type: String, required: true },
+  gameRoomCode: {
+    type: String,
+    default: null,
+  },
+  playerName: {
+    type: String,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -91,8 +105,19 @@ const clientIDSchema = new mongoose.Schema({
   },
 });
 
+// export const counterSchema = new mongoose.Schema({
+//   _id: { type: String, required: true },
+//   sequence_value: { type: Number, default: 0 },
+// });
+
 export const GameRoom = mongoose.model('GameRoom', GameRoomSchema);
 export const ClientId = mongoose.model('ClientId', clientIDSchema);
+// export const Counter = mongoose.model('Counter', counterSchema);
+
+// Default - home route
+dbApp.get('/', (_req: Request, res: Response) => {
+  res.send('Hello! This is the DB server of tetris multiplayer');
+});
 
 // Apply gameRoom routes
 dbApp.use('/api/gameRooms', gameRoomRoutes);
