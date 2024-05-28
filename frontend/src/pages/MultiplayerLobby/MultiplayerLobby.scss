@@ -2,39 +2,27 @@
 @import '@styles/mixins.scss';
 
 .multiplayer-lobby {
-  width: 70vw;
-  height: 80%;
-  border: 4px solid $theme-border-color;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  @include multiplayer-layout;
 
   &__button {
-    border: 2px solid $theme-border-color;
-    transition: none;
+    @include multiplayer-button;
     width: 15vw;
-    color: antiquewhite;
     font-family: $font-family-game;
 
     &:hover {
       border: 2px solid $theme-border-color;
-    }
-
-    @media (max-width: $screen-width-800) {
-      width: 30vw;
     }
   }
 
   &__button {
     width: 18vw;
     height: 4vw;
-    transition: 0.1s ease-out;
+    // transition: 0.1s ease-out;
 
-    &:hover {
-      transform: scale(1.05);
-      transition: 0.1s ease-in;
-    }
+    // &:hover {
+    //   transform: scale(1.05);
+    //   transition: 0.1s ease-in;
+    // }
 
     &.regenerate-code {
       font-size: 1vw;

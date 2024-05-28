@@ -1,0 +1,49 @@
+@import '@styles/main.scss';
+@import '@styles/mixins.scss';
+
+.multiplayer-clientid {
+  @include multiplayer-layout;
+  font-family: $font-family-game;
+  justify-content: space-evenly;
+
+  .title {
+    font-size: 2vw;
+    color: antiquewhite;
+    font-family: $font-family-intro;
+    margin: 2vw 0;
+  }
+
+  .button {
+    @include multiplayer-button;
+    padding: 1vw;
+    width: 20vw;
+  }
+
+  ._loading_overlay_wrapper {
+    width: 60%;
+    height: 40%;
+    padding: 0.5vw 1vw;
+
+    @media (max-width: $screen-width-800) {
+      height: 20%;
+    }
+    .display {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+
+      &__text {
+        font-size: 1.2vw;
+        text-transform: uppercase;
+      }
+
+      &__note {
+        font-size: 0.8vw;
+        text-transform: uppercase;
+      }
+    }
+  }
+}

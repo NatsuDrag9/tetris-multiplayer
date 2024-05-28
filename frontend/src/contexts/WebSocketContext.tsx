@@ -11,6 +11,8 @@ import {
 } from 'react';
 
 interface WebSocketContextValue {
+  clientId: string | null;
+  setClientId: (_value: string | null) => void;
   isConnectedToServer: boolean;
   sendMessage: (message: WebSocketMessage) => void;
   commMessages: WebSocketMessage[];
@@ -41,6 +43,12 @@ interface WebSocketProviderProps {
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   children,
 }) => {
+  const [clientId, setId] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('clientId');
+    }
+    return null;
+  });
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [commMessages, setCommMessages] = useState([] as WebSocketMessage[]);
   const [errorMessages, setErrorMessages] = useState([] as WebSocketMessage[]);
@@ -50,10 +58,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   const [gameRoomDetails, setGameRoomDetails] =
     useState<GameRoomDetails | null>(null);
 
-  useEffect(() => {
-    const serverUrl = import.meta.env.VITE_WEB_SOCKET_URL;
-    const newSocket = new WebSocket(serverUrl);
-
+  function initializeWSConnection(receivedClientId: string): WebSocket {
+    const newSocket = new WebSocket(
+      import.meta.env.VITE_WEB_SOCKET_URL,
+      receivedClientId
+    );
     newSocket.onopen = () => {
       setIsConnectedToServer(true);
       logInDev('Connected to WebSocket server');
@@ -79,11 +88,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       logErrorInDev('WebSocket error:', error);
     };
 
-    setSocket(newSocket);
+    return newSocket;
+  }
+
+  useEffect(() => {
+    if (clientId !== null) {
+      setSocket(initializeWSConnection(clientId));
+    }
 
     return () => {
       handleDisconnect();
-      newSocket.close();
+      if (socket) {
+        socket.close();
+      }
     };
   }, []);
 
@@ -94,6 +111,18 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       }
     });
   }, [errorMessages]);
+
+  const setClientId = (value: string | null) => {
+    setId(value);
+    if (typeof window !== 'undefined') {
+      if (value === null) {
+        localStorage.removeItem('clientId');
+        setId(null);
+      } else {
+        localStorage.setItem('clientId', value);
+      }
+    }
+  };
 
   const sendMessage = (message: WebSocketMessage) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
@@ -111,6 +140,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
   const handleDisconnect = () => {
     setIsConnectedToServer(false);
+    localStorage.removeItem('clientId');
+    setId(null);
   };
 
   const getWinner = (): string => {
@@ -144,6 +175,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     updateGameRoomDetails,
     setCurrentPlayer,
     getWinner,
+    clientId,
+    setClientId,
   };
 
   return (

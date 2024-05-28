@@ -1,7 +1,7 @@
 import './MultiplayerLobby.scss';
 import { useEffect, useRef, useState } from 'react';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
-import fetchRandomCode from '@services/multiPlayer';
+import { fetchRandomCode } from '@services/multiPlayer';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import validateRoomCode from '@utils/validate-room-code';
