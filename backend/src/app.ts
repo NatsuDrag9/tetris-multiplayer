@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import getRandomCode from '@src/routes/api/getRandomCode';
-import getClientId from '@src/routes/api/generateClientId';
+import generateClientId from '@src/routes/api/generateClientId';
 import serverMiddlewares from './middlewares/serverMiddlewares';
 
 // Main application that generates the game room code and client id
@@ -17,7 +17,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 // Application routes
 app.use('/api', getRandomCode);
-app.use('/api', getClientId);
+app.use('/api', generateClientId);
 
 // Catch-all route
 app.use((_req: Request, res: Response, next: NextFunction) => {
