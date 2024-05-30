@@ -181,9 +181,6 @@ async function handleCommunicationMessages(
           PLAYER_TWO
         );
 
-        logInDev('In game over, playerOneClientId: ', playerOneClientId);
-        logInDev('In game over, playerTwoClientId: ', playerTwoClientId);
-
         if (matchedGameRoom && playerOneClientId && playerTwoClientId) {
           if (
             matchedGameRoom.playerOneInfo.turnsRemaining > 0 &&
@@ -226,7 +223,6 @@ async function handleCommunicationMessages(
               matchedGameRoom.playerTwoInfo.score,
               matchedGameRoom.playerTwoInfo.penalties
             );
-            logInDev('Winner is: ', winner);
 
             const winnerMessage = {
               messageType: MessageType.GAME_MESSAGE,
