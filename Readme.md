@@ -35,6 +35,7 @@ This application is my extention to **Thomas Weibenfalk's** [How to build Tetris
   - press start 2p by codeman38
   - emulogic by Freaky Fonts
 - Application icon from [svgrepo](https://www.svgrepo.com/svg/283953/tetris)
+- `#programming-help` channel of [Freecodecamp's Discord server](https://discord.com/invite/freecodecamp-org-official-fi-fo-692816967895220344).
 
 # Screenshots
 
