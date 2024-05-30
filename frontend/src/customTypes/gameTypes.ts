@@ -15,7 +15,7 @@ export interface WebSocketMessage {
 
 export interface GameRoomDetails {
   roomId: number;
-  entryCode: string;
+  gameRoomCode: string;
   player: string;
 }
 

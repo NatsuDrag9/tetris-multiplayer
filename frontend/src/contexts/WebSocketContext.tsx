@@ -133,7 +133,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   const setCurrentPlayer = (playerName: string) => {
     setGameRoomDetails({
       roomId: 0,
-      entryCode: '',
+      gameRoomCode: '',
       player: playerName,
     });
   };
@@ -160,7 +160,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     }
     setGameRoomDetails((prevValue: GameRoomDetails | null) => ({
       roomId: roomId,
-      entryCode: code,
+      gameRoomCode: code,
       player: prevValue !== null ? prevValue.player : '',
     }));
   };
