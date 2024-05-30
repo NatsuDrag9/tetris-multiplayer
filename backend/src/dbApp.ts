@@ -66,6 +66,11 @@ export const GameRoomSchema = new mongoose.Schema({
     required: true,
     unique: true, // assuming room IDs should be unique
   },
+  roomCode: {
+    type: String,
+    requireted: true,
+    unique: true,
+  },
   playerOneInfo: {
     type: PlayerSchema,
     required: true,

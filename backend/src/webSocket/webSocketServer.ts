@@ -1,12 +1,7 @@
 import { RawData, WebSocketServer, WebSocket } from 'ws';
 import { logErrorInDev, logInDev } from '@utils/log-utils';
 import { Server } from 'http';
-// import { GameCommMode } from '@src/constants/appConstants';
-import {
-  GameRoom,
-  LobbyMember,
-  WebSocketMessage,
-} from '@src/customTypes/customTypes';
+import { WebSocketMessage } from '@src/customTypes/customTypes';
 import {
   CLIENT_ACKNOWLEDGMENT_TIMEOUT,
   CommMessage,
@@ -14,49 +9,43 @@ import {
   ErrorMessage,
   GameMessage,
   MAX_GAME_ROOMS,
-  MAX_TURNS,
   MessageType,
   PLAYER_ONE,
   PLAYER_TWO,
+  QueryStatus,
+  clientWsMap,
 } from '@src/constants/appConstants';
 import {
   determineWinner,
-  removeClientFromList,
-  resetGameRoom,
+  onWSConnectionClose,
+  sendMessageToClient,
 } from '@utils/game-utils';
-import { ClientId } from '@src/dbApp';
-import deleteClientId from '@src/middlewares/clientId';
-
-// Counter to uniquely identify each client
-let clientIdCounter: number = 0;
+import {
+  getClientIdByGameRoomAndPlayer,
+  updatePlayerRecord,
+} from '@src/databaseQuery/clientId';
+import {
+  createGameRoom,
+  getGameRoom,
+  updateGameRoomPlayerInfo,
+  updateGameRoomWaitingPlayer,
+} from '@src/databaseQuery/gameRoom';
 
 // Assigns a unique room id to each gameRoom object
 let gameRoomIdCounter: number = 1;
 
-// Array to store game rooms
-export const availableGameRooms: GameRoom[] = [];
-const allPlayerOnes: LobbyMember[] = [];
-const allPlayerTwos: LobbyMember[] = [];
-
-function handleCommunicationMessages(
+async function handleCommunicationMessages(
   message: WebSocketMessage,
   ws: WebSocket,
   wss: WebSocketServer,
-  clientId: number
+  clientId: string
 ) {
   if (message.commStatus === CommStatus.IN_LOBBY) {
     // All communication when
     switch (message.messageName) {
       case CommMessage.BROADCAST_CODE:
-        // Add new PLAYER_ONE to the list
-        logInDev(message.messageBody);
-        if (message.player === PLAYER_ONE) {
-          allPlayerOnes.push({
-            wsClient: ws,
-            code: message.messageBody,
-            clientId,
-          });
-        }
+        // Add code and player name to this PLAYER_ONE ClientId record
+        updatePlayerRecord(clientId, message.messageBody, message.player);
 
         // Broadcast the message to all clients except the sender
         wss.clients.forEach((client) => {
@@ -66,111 +55,91 @@ function handleCommunicationMessages(
         });
         break;
       case CommMessage.WAITING_FOR_CODE:
-        // Add new PLAYER_TWO to the list and keep the code field empty
-        if (message.player === PLAYER_TWO) {
-          allPlayerTwos.push({
-            wsClient: ws,
-            code: '',
-            clientId,
-          });
-        }
+        // Do nothing here
         break;
       case CommMessage.READY_TO_JOIN_GAME_ROOM:
-        // Set the code of this player two. This message type is only sent by PLAYER_TWO
-        const currentPlayerTwo = allPlayerTwos.find(
-          (playerTwo) => playerTwo.wsClient === ws
+        // message.messageBody contains the entered gameRoomCode
+        // Add code to this PLAYER_TWO ClientId record
+        const updatePlayerRecordResult = await updatePlayerRecord(
+          clientId,
+          message.messageBody,
+          message.player
         );
-        if (currentPlayerTwo) {
-          currentPlayerTwo.code = message.messageBody;
-        }
 
-        // Find PLAYER_ONE whose code matches the code entered by this PLAYER_TWO
-        const matchedPlayerOne = allPlayerOnes.find(
-          (playerOne) => playerOne.code === message.messageBody
-        );
-        // Check if game rooms are available
-        if (availableGameRooms.length < MAX_GAME_ROOMS) {
-          if (matchedPlayerOne) {
-            // Create GameRoom object and push
-            const gameRoom: GameRoom = {
-              playerOneInfo: {
-                penalties: 0,
-                playerName: PLAYER_ONE,
-                score: 0,
-                turnsRemaining: MAX_TURNS,
-              },
-              playerTwoInfo: {
-                penalties: 0,
-                playerName: PLAYER_TWO,
-                score: 0,
-                turnsRemaining: MAX_TURNS,
-              },
-              wsPlayerOne: matchedPlayerOne.wsClient,
-              wsPlayerTwo: ws,
-              roomId: gameRoomIdCounter,
-              waitingPlayer: null,
-            };
-            availableGameRooms.push(gameRoom);
+        if (updatePlayerRecordResult === QueryStatus.SUCCESS) {
+          // Get client id of PLAYER_ONE who is paired with this PLAYER_TWO
+          const playerOneClientId = await getClientIdByGameRoomAndPlayer(
+            message.messageBody,
+            PLAYER_ONE
+          );
+          if (playerOneClientId !== undefined) {
+            const createGameRoomResult = await createGameRoom(
+              playerOneClientId,
+              clientId,
+              gameRoomIdCounter,
+              message.messageBody
+            );
 
-            // Send a message of type GAME_ROOM_ASSIGNED to PLAYER_ONE
-            matchedPlayerOne.wsClient.send(
-              JSON.stringify({
+            if (createGameRoomResult === QueryStatus.SUCCESS) {
+              // Send a message of type GAME_ROOM_ASSIGNED to PLAYER_ONE
+              sendMessageToClient(playerOneClientId, {
                 messageType: MessageType.COMM_MESSAGE,
                 messageName: CommMessage.GAME_ROOM_ASSIGNED,
                 isConnectedToServer: true,
                 messageBody: `You are assigned game room: ${gameRoomIdCounter}`,
                 player: PLAYER_ONE,
                 commStatus: CommStatus.IN_GAME_ROOM,
-              })
-            );
+              });
 
-            // Send a message of type GAME_ROOM_ASSIGNED to PLAYER_TWO
-            ws.send(
-              JSON.stringify({
+              // Send a message of type GAME_ROOM_ASSIGNED to PLAYER_TWO
+              //  clientId here is of PLAYER_TWO as READY_TO_JOIN is only sent by PLAYER_TWO
+              sendMessageToClient(clientId, {
                 messageType: MessageType.COMM_MESSAGE,
                 messageName: CommMessage.GAME_ROOM_ASSIGNED,
                 isConnectedToServer: true,
                 messageBody: `You are assigned game room: ${gameRoomIdCounter}`,
                 player: PLAYER_TWO,
                 commStatus: CommStatus.IN_GAME_ROOM,
-              })
-            );
+              });
 
-            // Increment gameRoomIdCounter until it reaches the max number of game rooms allowed
-            if (gameRoomIdCounter < MAX_GAME_ROOMS) {
-              gameRoomIdCounter += 1;
-            } else {
-              gameRoomIdCounter = 0;
+              // Increment gameRoomIdCounter until it reaches the max number of game rooms allowed
+              if (gameRoomIdCounter < MAX_GAME_ROOMS) {
+                gameRoomIdCounter += 1;
+              } else {
+                gameRoomIdCounter = 0;
+              }
+            } else if (createGameRoomResult === QueryStatus.FAILURE) {
+              // Send a message of type GAME_ROOM_UNAVAILABLE to PLAYER_ONE
+              sendMessageToClient(playerOneClientId, {
+                messageType: MessageType.COMM_MESSAGE,
+                messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
+                isConnectedToServer: true,
+                messageBody: 'No game room available at the moment.',
+                player: PLAYER_ONE,
+                commStatus: CommStatus.IN_LOBBY,
+              });
+
+              // Send a message of type GAME_ROOM_UNAVAILABLE to PLAYER_TWO
+              sendMessageToClient(clientId, {
+                messageType: MessageType.COMM_MESSAGE,
+                messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
+                isConnectedToServer: true,
+                messageBody: 'No game room available at the moment.',
+                player: PLAYER_TWO,
+                commStatus: CommStatus.IN_LOBBY,
+              });
+              // ws.send(
+              //   JSON.stringify({
+              //     messageType: MessageType.COMM_MESSAGE,
+              //     messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
+              //     isConnectedToServer: true,
+              //     messageBody: 'No game room available at the moment.',
+              //     player: PLAYER_TWO,
+              //     commStatus: CommStatus.IN_LOBBY,
+              //   })
+              // );
             }
           }
-        } else if (matchedPlayerOne) {
-          // Send a message of type GAME_ROOM_UNAVAILABLE to PLAYER_ONE
-          logInDev(
-            'Sending no game room available to matched player one: ',
-            matchedPlayerOne.code
-          );
-          matchedPlayerOne.wsClient.send(
-            JSON.stringify({
-              messageType: MessageType.COMM_MESSAGE,
-              messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
-              isConnectedToServer: true,
-              messageBody: 'No game room available at the moment.',
-              player: PLAYER_ONE,
-              commStatus: CommStatus.IN_LOBBY,
-            })
-          );
-
-          // Send a message of type GAME_ROOM_UNAVAILABLE to PLAYER_TWO
-          ws.send(
-            JSON.stringify({
-              messageType: MessageType.COMM_MESSAGE,
-              messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
-              isConnectedToServer: true,
-              messageBody: 'No game room available at the moment.',
-              player: PLAYER_TWO,
-              commStatus: CommStatus.IN_LOBBY,
-            })
-          );
         }
         break;
       default:
@@ -190,121 +159,94 @@ function handleCommunicationMessages(
         break;
       case GameMessage.TURN_INFO:
         const parsedMessage = JSON.parse(message.messageBody);
-        const matchedIndex = availableGameRooms.findIndex(
-          (gameRoom: GameRoom) => gameRoom.roomId === parsedMessage.roomId
-        );
-        if (parsedMessage.playerName === PLAYER_ONE) {
-          availableGameRooms[matchedIndex].playerOneInfo = {
-            playerName: parsedMessage.playerName,
-            score: parsedMessage.score,
-            turnsRemaining: parsedMessage.turnsRemaining,
-            penalties: parsedMessage.penalties,
-          };
-        } else if (parsedMessage.playerName === PLAYER_TWO) {
-          availableGameRooms[matchedIndex].playerTwoInfo = {
-            playerName: parsedMessage.playerName,
-            score: parsedMessage.score,
-            turnsRemaining: parsedMessage.turnsRemaining,
-            penalties: parsedMessage.penalties,
-          };
-        }
-        logInDev(
-          'Turn info: ',
-          availableGameRooms[matchedIndex].playerOneInfo,
-          availableGameRooms[matchedIndex].playerTwoInfo,
-          availableGameRooms[matchedIndex].roomId
-        );
+
+        const playerInfo = {
+          playerName: parsedMessage.playerName,
+          score: parsedMessage.score,
+          turnsRemaining: parsedMessage.turnsRemaining,
+          penalties: parsedMessage.penalties,
+        };
+
+        updateGameRoomPlayerInfo(parsedMessage.roomId, playerInfo);
         break;
       case GameMessage.GAME_OVER:
         const gameRoomDetails = JSON.parse(message.messageBody);
-        const matchedRoomIndex = availableGameRooms.findIndex(
-          (gameRoom: GameRoom) => gameRoom.roomId === gameRoomDetails.roomId
+        const matchedGameRoom = await getGameRoom(gameRoomDetails.roomId);
+        const playerOneClientId = await getClientIdByGameRoomAndPlayer(
+          gameRoomDetails.gameRoomCode,
+          PLAYER_ONE
         );
-        const gameRoom = availableGameRooms[matchedRoomIndex];
+        const playerTwoClientId = await getClientIdByGameRoomAndPlayer(
+          gameRoomDetails.gameRoomCode,
+          PLAYER_TWO
+        );
 
-        const matchedPlayerOne =
-          allPlayerOnes[
-            allPlayerOnes.findIndex(
-              (playerOne) => playerOne.wsClient === gameRoom.wsPlayerOne
-            )
-          ];
+        logInDev('In game over, playerOneClientId: ', playerOneClientId);
+        logInDev('In game over, playerTwoClientId: ', playerTwoClientId);
 
-        const matchedPlayerTwo =
-          allPlayerTwos[
-            allPlayerTwos.findIndex(
-              (playerTwo) => playerTwo.wsClient === gameRoom.wsPlayerTwo
-            )
-          ];
-        if (
-          gameRoom.playerOneInfo.turnsRemaining > 0 &&
-          gameRoom.playerTwoInfo.turnsRemaining === 0
-        ) {
-          // Send player two message that player one is still playing
-          availableGameRooms[matchedRoomIndex].waitingPlayer = PLAYER_TWO;
-          matchedPlayerTwo.wsClient.send(
-            JSON.stringify({
+        if (matchedGameRoom && playerOneClientId && playerTwoClientId) {
+          if (
+            matchedGameRoom.playerOneInfo.turnsRemaining > 0 &&
+            matchedGameRoom.playerTwoInfo.turnsRemaining === 0
+          ) {
+            updateGameRoomWaitingPlayer(gameRoomDetails.roomId, PLAYER_TWO);
+
+            // Send player two message that player one is still playing
+            sendMessageToClient(playerTwoClientId, {
               messageType: MessageType.GAME_MESSAGE,
-              messageName: GameMessage.WINNER,
+              messageName: GameMessage.WAITING_PLAYER,
               isConnectedToServer: true,
               messageBody: 'Waiting for your opponent to finish',
               player: PLAYER_TWO,
               commStatus: CommStatus.IN_GAME_ROOM,
-            })
-          );
-        } else if (
-          gameRoom.playerOneInfo.turnsRemaining === 0 &&
-          gameRoom.playerTwoInfo.turnsRemaining > 0
-        ) {
-          availableGameRooms[matchedRoomIndex].waitingPlayer = PLAYER_ONE;
-          matchedPlayerOne.wsClient.send(
-            JSON.stringify({
+            });
+          } else if (
+            matchedGameRoom.playerOneInfo.turnsRemaining === 0 &&
+            matchedGameRoom.playerTwoInfo.turnsRemaining > 0
+          ) {
+            // Send player one message that player two is still playing
+            updateGameRoomWaitingPlayer(gameRoomDetails.roomId, PLAYER_ONE);
+            sendMessageToClient(playerTwoClientId, {
               messageType: MessageType.GAME_MESSAGE,
               messageName: GameMessage.WAITING_PLAYER,
               isConnectedToServer: true,
               messageBody: 'Waiting for your opponent to finish',
               player: PLAYER_ONE,
               commStatus: CommStatus.IN_GAME_ROOM,
-            })
-          );
-        }
+            });
+          }
 
-        // Check if both players have finished their turns
-        if (
-          gameRoom.playerOneInfo.turnsRemaining === 0 &&
-          gameRoom.playerTwoInfo.turnsRemaining === 0
-        ) {
-          const winner = determineWinner(
-            gameRoom.playerOneInfo.score,
-            gameRoom.playerOneInfo.penalties,
-            gameRoom.playerTwoInfo.score,
-            gameRoom.playerTwoInfo.penalties
-          );
+          if (
+            matchedGameRoom.playerOneInfo.turnsRemaining === 0 &&
+            matchedGameRoom.playerTwoInfo.turnsRemaining === 0
+          ) {
+            const winner = determineWinner(
+              matchedGameRoom.playerOneInfo.score,
+              matchedGameRoom.playerOneInfo.penalties,
+              matchedGameRoom.playerTwoInfo.score,
+              matchedGameRoom.playerTwoInfo.penalties
+            );
+            logInDev('Winner is: ', winner);
 
-          const winnerMessage = JSON.stringify({
-            messageType: MessageType.GAME_MESSAGE,
-            messageName: GameMessage.WINNER,
-            isConnectedToServer: true,
-            messageBody: `${winner}`,
-            commStatus: CommStatus.IN_GAME_ROOM,
-          });
+            const winnerMessage = {
+              messageType: MessageType.GAME_MESSAGE,
+              messageName: GameMessage.WINNER,
+              isConnectedToServer: true,
+              messageBody: `${winner}`,
+              commStatus: CommStatus.IN_GAME_ROOM,
+            };
 
-          // Send the winner message to both players
-          matchedPlayerOne.wsClient.send(
-            JSON.stringify({
-              ...JSON.parse(winnerMessage),
+            // Send the winner message to both players
+            sendMessageToClient(playerOneClientId, {
+              ...winnerMessage,
               player: PLAYER_ONE,
-            })
-          );
+            });
 
-          matchedPlayerTwo.wsClient.send(
-            JSON.stringify({
-              ...JSON.parse(winnerMessage),
+            sendMessageToClient(playerTwoClientId, {
+              ...winnerMessage,
               player: PLAYER_TWO,
-            })
-          );
-
-          // Reset the waitingPlayer key of the current gameRoom
-          availableGameRooms[matchedRoomIndex].waitingPlayer = null;
+            });
+          }
         }
         break;
       default:
@@ -327,33 +269,22 @@ function handleWebSocketConnections(server: Server) {
   };
 
   wss.on('connection', async (ws, req) => {
-    clientIdCounter += 1;
-    logInDev('New WebSocket connection');
-
     const clientId = req.headers['sec-websocket-protocol'];
-    try {
-      const doc = await ClientId.findById(clientId);
-      if (!doc) {
-        logInDev('ClientId not found');
-        ws.terminate();
-        return;
-      }
-      logInDev('Client Id: ', doc);
-    } catch (error) {
-      logErrorInDev('An error occurred when finding client in db\n', error);
+    logInDev('New WebSocket connection by clientId: ', clientId);
+
+    // Initialize counter for game room
+    // initializeCounter();
+
+    if (clientId) {
+      clientWsMap.set(clientId, ws);
     }
 
     // Send initial message to the newly connected client
     ws.send(JSON.stringify(clientMessage));
 
     // Set acknowledgment timeout
-    const acknowledgementTimeout = setTimeout(async () => {
+    const acknowledgementTimeout = setTimeout(() => {
       logInDev('Acknowledgment timeout. Client did not respond.');
-
-      // Rremoving the client from lists and resetting game rooms
-      removeClientFromList(ws, allPlayerOnes);
-      removeClientFromList(ws, allPlayerTwos);
-      resetGameRoom(ws);
 
       const clientMessageTimeout: WebSocketMessage = {
         messageType: MessageType.ERROR_MESSAGE,
@@ -366,8 +297,10 @@ function handleWebSocketConnections(server: Server) {
 
       ws.send(JSON.stringify(clientMessageTimeout));
 
-      // Delete the client id from the database
-      await deleteClientId(clientId);
+      // Connection close operations
+      if (clientId) {
+        onWSConnectionClose(gameRoomIdCounter - 1, clientId);
+      }
 
       // Automatically disconnect the client
       ws.terminate();
@@ -384,18 +317,22 @@ function handleWebSocketConnections(server: Server) {
         // if (parsedMessage.messageType === MessageType.COMM_MESSAGE) {
         //   handleCommunicationMessages(parsedMessage, ws, wss, clientIdCounter);
         // }
-        handleCommunicationMessages(parsedMessage, ws, wss, clientIdCounter);
+        if (clientId !== undefined) {
+          handleCommunicationMessages(parsedMessage, ws, wss, clientId);
+        }
       } catch (error) {
         logErrorInDev('Error parsing WebSocket message:', error);
       }
     });
 
     // WebSocket close handler
-    ws.on('close', async () => {
-      logInDev('WebSocket connection closed');
-      await deleteClientId(clientId);
-
+    ws.on('close', () => {
+      // Connection close operations
+      if (clientId) {
+        onWSConnectionClose(gameRoomIdCounter - 1, clientId);
+      }
       clearTimeout(acknowledgementTimeout);
+      logInDev('WebSocket connection closed');
     });
 
     // WebSocket error handler

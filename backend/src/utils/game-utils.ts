@@ -1,54 +1,31 @@
 import {
-  CommMessage,
-  CommStatus,
-  MessageType,
   PLAYER_ONE,
   PLAYER_TWO,
+  clientWsMap,
 } from '@src/constants/appConstants';
-import { LobbyMember } from '@src/customTypes/customTypes';
-import { availableGameRooms } from '@src/webSocket/webSocketServer';
+import { WebSocketMessage } from '@src/customTypes/customTypes';
 import { WebSocket } from 'ws';
+import { deleteGameRoom } from '@src/databaseQuery/gameRoom';
+import { deleteClientId } from '@src/databaseQuery/clientId';
+import { logErrorInDev } from './log-utils';
 
-// Function to remove a client from the list of players
-export function removeClientFromList(
-  client: WebSocket,
-  list: LobbyMember[]
-): void {
-  const index = list.findIndex((player) => player.wsClient === client);
-  if (index !== -1) {
-    list.splice(index, 1);
-  }
+export function onWSConnectionClose(roomId: number, clientId: string) {
+  deleteGameRoom(roomId);
+  clientWsMap.delete(clientId);
+  deleteClientId(clientId);
 }
 
-// Function to reset the corresponding game room associated with a disconnected client
-export function resetGameRoom(client: WebSocket): void {
-  const gameRoomIndex = availableGameRooms.findIndex((room) => {
-    return room.wsPlayerOne === client || room.wsPlayerTwo === client;
-  });
-
-  if (gameRoomIndex !== -1) {
-    const gameRoom = availableGameRooms[gameRoomIndex];
-    const opponentWs =
-      gameRoom.wsPlayerOne === client
-        ? gameRoom.wsPlayerTwo
-        : gameRoom.wsPlayerOne;
-
-    // Notify the opponent about the disconnection
-    if (opponentWs.readyState === WebSocket.OPEN) {
-      opponentWs.send(
-        JSON.stringify({
-          messageType: MessageType.ERROR_MESSAGE,
-          messageName: CommMessage.DISCONNECTED,
-          isConnectedToServer: true,
-          messageBody: 'COMM_ERROR: Your opponent has disconnected.',
-          player: gameRoom.wsPlayerOne === client ? PLAYER_TWO : PLAYER_ONE,
-          commStatus: CommStatus.IN_LOBBY,
-        })
-      );
-    }
-
-    // Reset the game room
-    availableGameRooms.splice(gameRoomIndex, 1);
+export function sendMessageToClient(
+  clientId: string,
+  message: WebSocketMessage
+) {
+  const ws = clientWsMap.get(clientId);
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message));
+  } else {
+    logErrorInDev(
+      `Failed to send message to client ${clientId}: WebSocket connection not open`
+    );
   }
 }
 

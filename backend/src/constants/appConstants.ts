@@ -1,3 +1,5 @@
+import { WebSocket } from 'ws';
+
 const CODE_LENGTH = 6;
 
 // export const GameCommMode = {
@@ -74,6 +76,9 @@ export const MAX_TURNS = 5;
 export const CLIENT_ACKNOWLEDGMENT_TIMEOUT = 180 * 1000; // Wait for 3 min (in ms)
 
 export const CLIENT_ID_EXPIRY_DURATION = 3600; // one hour
+
+// Mapping to store clientId and corresponding ws object
+export const clientWsMap = new Map<string, WebSocket>();
 
 // Mongoose DB query constants
 export const QueryStatus = {

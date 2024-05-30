@@ -39,7 +39,8 @@ import { logErrorInDev, logInDev } from '@utils/log-utils';
 export async function createGameRoom(
   p1ClientId: string,
   p2ClientId: string,
-  roomId: number
+  roomId: number,
+  gameRoomCode: string
 ): Promise<number> {
   try {
     const newRoom = new GameRoom({
@@ -56,6 +57,7 @@ export async function createGameRoom(
         score: 0,
         turnsRemaining: MAX_TURNS,
       },
+      roomCode: gameRoomCode,
       playerOneClientId: p1ClientId,
       playerTwoClientId: p2ClientId,
       waitingPlayer: null,
@@ -74,7 +76,7 @@ export async function createGameRoom(
 
 export async function getGameRoom(roomId: number) {
   try {
-    const gameRoom = await GameRoom.findById(roomId);
+    const gameRoom = await GameRoom.findOne({ roomId });
 
     if (gameRoom) {
       logInDev('Found game room record having room id: ', roomId);
@@ -102,7 +104,7 @@ export async function updateGameRoomPlayerInfo(
     } else {
       update.playerTwoInfo = playerInfo;
     }
-    const gameRoom = await GameRoom.findByIdAndUpdate(roomId, update, {
+    const gameRoom = await GameRoom.findOneAndUpdate({ roomId }, update, {
       new: true,
     });
 
@@ -126,8 +128,8 @@ export async function updateGameRoomWaitingPlayer(
   waitingPlayerName: string
 ) {
   try {
-    const result = await GameRoom.findByIdAndUpdate(
-      roomId,
+    const result = await GameRoom.findOneAndUpdate(
+      { roomId },
       { waitingPlayer: waitingPlayerName },
       {
         new: true,
@@ -148,6 +150,21 @@ export async function updateGameRoomWaitingPlayer(
       `An error occurred when updating waiting player in the game room record with roomId: ${roomId}`,
       error
     );
+    throw error;
+  }
+}
+
+export async function deleteGameRoom(roomId: number): Promise<number> {
+  try {
+    const deletedClientId = await GameRoom.findOneAndDelete({ roomId });
+    if (deletedClientId) {
+      logInDev(`Successfully deleted game room: `, roomId);
+      return QueryStatus.SUCCESS;
+    }
+    logInDev(`No game room found with ID: ${roomId}`);
+    return QueryStatus.FAILURE;
+  } catch (error: unknown) {
+    logErrorInDev(`Error deleting game room: ${error}`);
     throw error;
   }
 }
