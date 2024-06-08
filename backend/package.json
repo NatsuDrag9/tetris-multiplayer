@@ -18,12 +18,11 @@
   "type": "module",
   "scripts": {
     "start": "node dist/server.js",
-    "build:test": "cross-env NODE_ENV=testing tsc && tsc-alias",
     "build": "tsc && tsc-alias",
     "clean": "rimraf dist",
-    "clean:test": "cross-env NODE_ENV=testing rimraf dist-test",
+    "clean:test": "rimraf dist-test",
     "dev": "yarn clean && yarn build && concurrently(\"tsc --watch\" \"tsc-alias -w\" \"nodemon dist/server.js\")",
-    "test": "yarn clean:test && yarn build:test && cross-env NODE_ENV=testing jest --detectOpenHandles",
+    "test": "yarn clean:test && yarn build && jest --detectOpenHandles",
     "lint": "eslint . --ext .ts",
     "format": " prettier --write ."
   },
