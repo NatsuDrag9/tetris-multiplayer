@@ -15,6 +15,7 @@ describe('Multiplayer Client Id flow', () => {
   afterEach(() => clientIdServer.resetHandlers());
   afterAll(() => clientIdServer.close());
 
+  // Initial tests
   test('local storage should not have a clientId initially', () => {
     expect(localStorage.getItem('clientId')).toBe(null);
   });
@@ -23,4 +24,6 @@ describe('Multiplayer Client Id flow', () => {
     const response = await fetchClientId();
     assertType<'json'>(response);
   });
+
+  //
 });
