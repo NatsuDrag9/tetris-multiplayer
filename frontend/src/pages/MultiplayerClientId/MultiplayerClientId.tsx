@@ -41,7 +41,7 @@ function MultiplayerClientId() {
       {clientId !== null ? (
         <LoadingOverlay active={loading} spinner>
           <div className="display">
-            <p className="display__text" data-testid="ticket">
+            <p className="display__text" data-testid="display-ticket">
               Your ticket: {clientId}
             </p>
 

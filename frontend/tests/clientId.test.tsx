@@ -17,7 +17,11 @@ import { MemoryRouter } from 'react-router-dom';
 
 describe('Multiplayer Client Id flow', () => {
   beforeAll(() => successfulClientIdServer.listen());
-  afterEach(() => successfulClientIdServer.resetHandlers());
+  afterEach(() => {
+    successfulClientIdServer.resetHandlers();
+    errorClientIdServer.resetHandlers();
+    localStorage.removeItem('clientId');
+  });
   afterAll(() => {
     successfulClientIdServer.close();
     errorClientIdServer.close();
@@ -47,7 +51,7 @@ describe('Multiplayer Client Id flow', () => {
     fireEvent.click(getByTestId('get-ticket'));
 
     await waitFor(() => {
-      expect(getByTestId('ticket').innerHTML).toMatch(
+      expect(getByTestId('display-ticket').innerHTML).toMatch(
         'Your ticket: testingClientId123'
       );
     });
@@ -56,18 +60,22 @@ describe('Multiplayer Client Id flow', () => {
   });
 
   // Test for handling non-200 API response
-  test('handles API error response', async () => {
+  test('Handles Cliend Id API error response', async () => {
     // Start the error server
     errorClientIdServer.listen();
 
-    try {
-      await fetchClientId();
-    } catch (error) {
-      expect(error).toBeTruthy();
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketProvider>
+          <MultiplayerClientId />
+        </WebSocketProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(getByTestId('get-ticket'));
+
+    await waitFor(() => {
       expect(localStorage.getItem('clientId')).toBe(null);
-    } finally {
-      // Reset the error server
-      errorClientIdServer.resetHandlers();
-    }
+    });
   });
 });
