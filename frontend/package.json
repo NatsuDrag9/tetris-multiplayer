@@ -30,7 +30,7 @@
     "vitest": "^1.6.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/dom": "^10.1.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
