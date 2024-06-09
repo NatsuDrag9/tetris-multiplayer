@@ -7,9 +7,13 @@ import {
   describe,
   expect,
 } from 'vitest';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { fetchClientId } from '@services/multiPlayer';
 import { logInTest } from '@utils/log-utils';
 import { successfulClientIdServer, errorClientIdServer } from './server';
+import MultiplayerClientId from '@pages/MultiplayerClientId/MultiplayerClientId';
+import { WebSocketProvider } from '@contexts/WebSocketContext';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('Multiplayer Client Id flow', () => {
   beforeAll(() => successfulClientIdServer.listen());
@@ -25,10 +29,30 @@ describe('Multiplayer Client Id flow', () => {
   });
 
   // Test for 200 API response
-  test('API response should be of type JSON', async () => {
+  test('Sucessful API response should be of type JSON', async () => {
     const response = await fetchClientId();
     logInTest(response);
     assertType<'json'>(response);
+  });
+
+  test('Set clientId in local storage on success API response', async () => {
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketProvider>
+          <MultiplayerClientId />
+        </WebSocketProvider>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(getByTestId('get-ticket'));
+
+    await waitFor(() => {
+      expect(getByTestId('ticket').innerHTML).toMatch(
+        'Your ticket: testingClientId123'
+      );
+    });
+
+    expect(localStorage.getItem('clientId')).toBe('testingClientId123');
   });
 
   // Test for handling non-200 API response

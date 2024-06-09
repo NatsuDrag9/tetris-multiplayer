@@ -41,7 +41,9 @@ function MultiplayerClientId() {
       {clientId !== null ? (
         <LoadingOverlay active={loading} spinner>
           <div className="display">
-            <p className="display__text">Your ticket: {clientId}</p>
+            <p className="display__text" data-testid="ticket">
+              Your ticket: {clientId}
+            </p>
 
             <p className="display__note">
               This ticket is used internally. You don't need to do anything.
@@ -54,6 +56,7 @@ function MultiplayerClientId() {
                 navigate('/multiplayer-lobby');
                 window.location.reload();
               }}
+              data-testid="go-to-lobby"
             >
               Go to Lobby
             </button>
@@ -64,6 +67,7 @@ function MultiplayerClientId() {
           type="button"
           className="clientid button"
           onClick={handleGenerateClientId}
+          data-testid="get-ticket"
         >
           Get Your ticket
         </button>
