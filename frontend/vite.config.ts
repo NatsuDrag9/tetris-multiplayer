@@ -25,7 +25,7 @@ const viteConfig = defineViteConfig({
 
 const vitestConfig = defineVitestConfig({
   test: {
-    setupFiles: ['vitest-localStorage-mock'],
+    setupFiles: ['vitest-localStorage-mock', './tests/setupTests.ts'],
     mockReset: false,
     environment: 'jsdom',
   },
