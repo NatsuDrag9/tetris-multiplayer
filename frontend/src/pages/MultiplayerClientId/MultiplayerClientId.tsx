@@ -24,7 +24,7 @@ function MultiplayerClientId() {
         if (err.response) {
           toast.error(
             err.response.data.error ||
-              'An error occurred when generating client id'
+              'An error occurred when generating client id.'
           );
         }
         setClientId(null);
@@ -36,7 +36,25 @@ function MultiplayerClientId() {
 
   return (
     <div className="multiplayer-clientid">
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            fontSize: '0.7vw',
+          },
+          success: {
+            iconTheme: {
+              primary: 'black',
+              secondary: 'rgb(201, 206, 214)',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: 'black',
+              secondary: 'rgb(173, 175, 179)',
+            },
+          },
+        }}
+      />
       <h2 className="title">Ticket Counter</h2>
       {clientId !== null ? (
         <LoadingOverlay active={loading} spinner>
