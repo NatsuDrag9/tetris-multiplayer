@@ -6,6 +6,7 @@ import LoadingOverlay from 'react-loading-overlay-ts';
 import { AxiosError } from 'axios';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { useNavigate } from 'react-router-dom';
+import { logErrorInDev } from '@utils/log-utils';
 
 function MultiplayerClientId() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -22,10 +23,16 @@ function MultiplayerClientId() {
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.response) {
+          // Server responded with an error status code (4xx or 5xx)
+          logErrorInDev('Error generating client id: ', err);
           toast.error(
             err.response.data.error ||
               'An error occurred when generating client id.'
           );
+        } else if (err.request) {
+          // The request was made but no response was received
+          logErrorInDev('Server is offline or unreachable');
+          toast.error('Server is offline or unreachable');
         }
         setClientId(null);
       }

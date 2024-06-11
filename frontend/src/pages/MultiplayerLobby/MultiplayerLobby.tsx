@@ -141,6 +141,7 @@ function MultiplayerLobby() {
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.response) {
+          // Server responded with an error status code (4xx or 5xx)
           logErrorInDev(
             err.response.data.error ||
               'An error occurred when fetching the code'
@@ -149,6 +150,10 @@ function MultiplayerLobby() {
             err.response.data.error ||
               'An error occurred when fetching the code'
           );
+        } else if (err.request) {
+          // The request was made but no response was received
+          logErrorInDev('Error: Server is offline or unreachable');
+          toast.error('Error: Server is offline or unreachable');
         }
       }
     } finally {
@@ -253,7 +258,25 @@ function MultiplayerLobby() {
 
   return (
     <div className="multiplayer-lobby">
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            fontSize: '0.7vw',
+          },
+          success: {
+            iconTheme: {
+              primary: 'black',
+              secondary: 'rgb(201, 206, 214)',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: 'black',
+              secondary: 'rgb(173, 175, 179)',
+            },
+          },
+        }}
+      />
       {/* {error && <div>{error}</div>} */}
       {generatesCode === null ? (
         <MultiplayerGameIntro

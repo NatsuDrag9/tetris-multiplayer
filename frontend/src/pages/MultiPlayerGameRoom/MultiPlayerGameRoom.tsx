@@ -21,7 +21,6 @@ import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { logInDev } from '@utils/log-utils';
 import { useNavigate } from 'react-router-dom';
 import wsErrorMessageHandler from '@utils/ws-error-message-handler';
-import { Toaster } from 'react-hot-toast';
 import usePiece from '@hooks/usePiece';
 import useStage from '@hooks/useStage';
 import useGameStatus from '@hooks/useGameStatus';
@@ -30,6 +29,7 @@ import { checkCollision, createStage } from '@utils/game-helpers';
 import { KeyCode } from '@customTypes/gameTypes';
 import useInterval from '@hooks/useInterval';
 import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
+import { Toaster } from 'react-hot-toast';
 
 function MultiPlayerGameRoom() {
   let homeTimerId: number = 0;
@@ -237,7 +237,25 @@ function MultiPlayerGameRoom() {
 
   return (
     <div className="multi-player">
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            fontSize: '0.7vw',
+          },
+          success: {
+            iconTheme: {
+              primary: 'black',
+              secondary: 'rgb(201, 206, 214)',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: 'black',
+              secondary: 'rgb(173, 175, 179)',
+            },
+          },
+        }}
+      />
       <div
         role="button"
         className="game-area-wrapper"
