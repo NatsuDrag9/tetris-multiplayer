@@ -2,11 +2,12 @@ import { Route, Routes } from 'react-router-dom';
 import './App.scss';
 import Home from '@pages/Home/Home';
 import SinglePlayer from '@pages/SinglePlayer/SinglePlayer';
-import MultiplayerLobby from '@pages/MultiplayerLobby/MultiplayerLobby';
 import { WebSocketProvider } from './contexts/WebSocketContext';
-import MultiPlayerGameRoom from '@pages/MultiPlayerGameRoom/MultiPlayerGameRoom';
-import { MultiplayerGameProvider } from '@contexts/MultiplayerGameContext';
 import MultiplayerClientId from '@pages/MultiplayerClientId/MultiplayerClientId';
+import {
+  ProtectedMultiplayerGameRoom,
+  ProtectedMultiplayerLobby,
+} from '@pages/ProtectedPages/ProtectedPages';
 
 function App() {
   return (
@@ -20,7 +21,15 @@ function App() {
             path="/multiplayer-clientid"
             element={<MultiplayerClientId />}
           />
-          <Route path="/multiplayer-lobby" element={<MultiplayerLobby />} />
+          <Route
+            path="/multiplayer-lobby"
+            element={<ProtectedMultiplayerLobby />}
+          />
+          <Route
+            path="/multiplayer"
+            element={<ProtectedMultiplayerGameRoom />}
+          />
+          {/* <Route path="/multiplayer-lobby" element={<MultiplayerLobby />} />
           <Route
             path="/multiplayer"
             element={
@@ -28,7 +37,7 @@ function App() {
                 <MultiPlayerGameRoom />
               </MultiplayerGameProvider>
             }
-          />
+          /> */}
         </Routes>
       </WebSocketProvider>
     </div>
