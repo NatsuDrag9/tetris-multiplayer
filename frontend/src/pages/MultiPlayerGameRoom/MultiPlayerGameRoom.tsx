@@ -94,10 +94,12 @@ function MultiPlayerGameRoom() {
   }, [errorMessages, isConnectedToServer]);
 
   const returnToHome = () => {
-    homeTimerId = setTimeout(() => {
-      navigate('/home');
-      window.location.reload();
-    }, RETURN_HOME_TIMER);
+    homeTimerId = Number(
+      setTimeout(() => {
+        navigate('/home');
+        window.location.reload();
+      }, RETURN_HOME_TIMER)
+    );
   };
 
   // Move the piece if no collision occurs

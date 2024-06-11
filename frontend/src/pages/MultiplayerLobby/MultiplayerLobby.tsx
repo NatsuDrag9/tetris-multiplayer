@@ -91,10 +91,12 @@ function MultiplayerLobby() {
   }, [commMessages, errorMessages, navigate, isConnectedToServer]);
 
   const returnToHome = () => {
-    homeTimerId = setTimeout(() => {
-      navigate('/home');
-      window.location.reload();
-    }, RETURN_HOME_TIMER);
+    homeTimerId = Number(
+      setTimeout(() => {
+        navigate('/home');
+        window.location.reload();
+      }, RETURN_HOME_TIMER)
+    );
     setLoading(false);
   };
 
