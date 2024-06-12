@@ -50,6 +50,7 @@ function MultiplayerClientId() {
     <div className="multiplayer-clientid">
       <Toaster toastOptions={toastOptions} />
       <h2 className="title">Ticket Counter</h2>
+      {loading && <LoadingOverlay active={loading} spinner></LoadingOverlay>}
       {clientId !== null ? (
         <LoadingOverlay active={loading} spinner>
           <div className="display">
