@@ -6,12 +6,15 @@ import LoadingOverlay from 'react-loading-overlay-ts';
 import { AxiosError } from 'axios';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { useNavigate } from 'react-router-dom';
-import { logErrorInDev } from '@utils/log-utils';
+import { logErrorInDev, logInTest } from '@utils/log-utils';
+import useReturnTo from '@hooks/useReturnTo';
+import toastOptions from '@constants/misc';
 
 function MultiplayerClientId() {
   const [loading, setLoading] = useState<boolean>(false);
   const { clientId, setClientId } = useWebSocketContext();
   const navigate = useNavigate();
+  const returnToHome = useReturnTo('home');
 
   const handleGenerateClientId = async () => {
     setLoading(true);
@@ -23,6 +26,7 @@ function MultiplayerClientId() {
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.response) {
+          logInTest('Error: ', err.response);
           // Server responded with an error status code (4xx or 5xx)
           logErrorInDev('Error generating client id: ', err);
           toast.error(
@@ -33,6 +37,7 @@ function MultiplayerClientId() {
           // The request was made but no response was received
           logErrorInDev('Server is offline or unreachable');
           toast.error('Server is offline or unreachable');
+          returnToHome();
         }
         setClientId(null);
       }
@@ -43,25 +48,7 @@ function MultiplayerClientId() {
 
   return (
     <div className="multiplayer-clientid">
-      <Toaster
-        toastOptions={{
-          style: {
-            fontSize: '0.7vw',
-          },
-          success: {
-            iconTheme: {
-              primary: 'black',
-              secondary: 'rgb(201, 206, 214)',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: 'black',
-              secondary: 'rgb(173, 175, 179)',
-            },
-          },
-        }}
-      />
+      <Toaster toastOptions={toastOptions} />
       <h2 className="title">Ticket Counter</h2>
       {clientId !== null ? (
         <LoadingOverlay active={loading} spinner>
