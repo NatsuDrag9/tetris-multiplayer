@@ -26,6 +26,7 @@ import { useWebSocketContext } from '@contexts/WebSocketContext';
 import wsErrorMessageHandler from '@utils/ws-error-message-handler';
 import Timer from '@components/Timer/Timer';
 import MultiplayerGameIntro from './MultiplayerGameIntro';
+import toastOptions from '@constants/misc';
 
 function MultiplayerLobby() {
   let homeTimerId: number = 0;
@@ -258,25 +259,7 @@ function MultiplayerLobby() {
 
   return (
     <div className="multiplayer-lobby">
-      <Toaster
-        toastOptions={{
-          style: {
-            fontSize: '0.7vw',
-          },
-          success: {
-            iconTheme: {
-              primary: 'black',
-              secondary: 'rgb(201, 206, 214)',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: 'black',
-              secondary: 'rgb(173, 175, 179)',
-            },
-          },
-        }}
-      />
+      <Toaster toastOptions={toastOptions} />
       {/* {error && <div>{error}</div>} */}
       {generatesCode === null ? (
         <MultiplayerGameIntro

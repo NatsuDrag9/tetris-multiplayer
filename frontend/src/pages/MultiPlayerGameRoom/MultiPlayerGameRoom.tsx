@@ -30,6 +30,7 @@ import { KeyCode } from '@customTypes/gameTypes';
 import useInterval from '@hooks/useInterval';
 import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import { Toaster } from 'react-hot-toast';
+import toastOptions from '@constants/misc';
 
 function MultiPlayerGameRoom() {
   let homeTimerId: number = 0;
@@ -237,25 +238,7 @@ function MultiPlayerGameRoom() {
 
   return (
     <div className="multi-player">
-      <Toaster
-        toastOptions={{
-          style: {
-            fontSize: '0.7vw',
-          },
-          success: {
-            iconTheme: {
-              primary: 'black',
-              secondary: 'rgb(201, 206, 214)',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: 'black',
-              secondary: 'rgb(173, 175, 179)',
-            },
-          },
-        }}
-      />
+      <Toaster toastOptions={toastOptions} />
       <div
         role="button"
         className="game-area-wrapper"
