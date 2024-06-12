@@ -29,15 +29,6 @@ function App() {
             path="/multiplayer"
             element={<ProtectedMultiplayerGameRoom />}
           />
-          {/* <Route path="/multiplayer-lobby" element={<MultiplayerLobby />} />
-          <Route
-            path="/multiplayer"
-            element={
-              <MultiplayerGameProvider>
-                <MultiPlayerGameRoom />
-              </MultiplayerGameProvider>
-            }
-          /> */}
         </Routes>
       </WebSocketProvider>
     </div>
