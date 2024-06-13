@@ -45,7 +45,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 }) => {
   const [clientId, setId] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('clientId');
+      return sessionStorage.getItem('clientId');
     }
     return null;
   });
@@ -116,10 +116,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     setId(value);
     if (typeof window !== 'undefined') {
       if (value === null) {
-        localStorage.removeItem('clientId');
+        sessionStorage.removeItem('clientId');
         setId(null);
       } else {
-        localStorage.setItem('clientId', value);
+        sessionStorage.setItem('clientId', value);
       }
     }
   };
@@ -140,7 +140,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
   const handleDisconnect = () => {
     setIsConnectedToServer(false);
-    localStorage.removeItem('clientId');
+    sessionStorage.removeItem('clientId');
     setId(null);
   };
 
