@@ -3,14 +3,23 @@ import './GameButton.scss';
 interface GameButtonPropsType {
   buttonText: string;
   onButtonClick: () => void;
+  buttonTestId: string;
 }
 
-function GameButton({ buttonText, onButtonClick }: GameButtonPropsType) {
+function GameButton({
+  buttonText,
+  onButtonClick,
+  buttonTestId,
+}: GameButtonPropsType) {
   const handleButtonClick = () => {
     onButtonClick();
   };
   return (
-    <button onClick={handleButtonClick} className="game-button">
+    <button
+      data-testid={buttonTestId}
+      onClick={handleButtonClick}
+      className="game-button"
+    >
       {buttonText}
     </button>
   );

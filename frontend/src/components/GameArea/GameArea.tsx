@@ -62,16 +62,19 @@ function GameArea({
                 gameOver={gameOver}
                 labelName="Rows: "
                 labelContent={(rows / 2).toString()}
+                labelTestId="multiplayer-rows-cleared"
               />
               <DisplayLabel
                 gameOver={gameOver}
                 labelName="Turns Left: "
                 labelContent={playerInfo.turnsRemaining.toString()}
+                labelTestId="multiplayer-turns-left"
               />
               <DisplayLabel
                 gameOver={gameOver}
                 labelName="Score: "
                 labelContent={gameScore.toString()}
+                labelTestId="multiplayer-score"
               />
             </>
           ) : (
@@ -80,6 +83,7 @@ function GameArea({
                 gameOver={gameOver}
                 labelName=""
                 labelContent="YOU FINISHED YOUR TURNS"
+                labelTestId="multiplayer-game-over"
               />
             </>
           )}
@@ -94,16 +98,19 @@ function GameArea({
               gameOver={gameOver}
               labelName="Rows: "
               labelContent={rows.toString()}
+              labelTestId="singleplayer-rows-cleared"
             />
             <DisplayLabel
               gameOver={gameOver}
               labelName="Level: "
               labelContent={currentLevel.toString()}
+              labelTestId="singleplayer-level"
             />
             <DisplayLabel
               gameOver={gameOver}
               labelName="Score: "
               labelContent={gameScore.toString()}
+              labelTestId="singleplayer-score"
             />
             <GameButton
               buttonText={
@@ -114,6 +121,7 @@ function GameArea({
                     : 'Pause Game'
               }
               onButtonClick={handleButtonClick}
+              buttonTestId={`singleplayer-${!gameStarted ? 'start-game' : gamePaused ? 'resume-game' : 'pause-game'}`}
             />
           </>
         ) : (
@@ -122,10 +130,12 @@ function GameArea({
               gameOver={gameOver}
               labelName=""
               labelContent="GAME OVER"
+              labelTestId="singleplayer-game-over"
             />
             <GameButton
               buttonText="Restart Game"
               onButtonClick={handleButtonClick}
+              buttonTestId="singleplayer-restart-game"
             />
           </>
         )}
