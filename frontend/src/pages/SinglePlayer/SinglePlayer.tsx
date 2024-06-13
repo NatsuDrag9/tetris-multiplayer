@@ -183,6 +183,7 @@ function SinglePlayer() {
         onKeyUp={keyUp}
         ref={gameAreaRef}
         tabIndex={0}
+        data-testid="singleplayer-container"
       >
         <GameArea
           stage={stage}
