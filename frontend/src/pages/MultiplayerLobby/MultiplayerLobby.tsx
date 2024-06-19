@@ -35,6 +35,7 @@ function MultiplayerLobby() {
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
+    openWSConnection,
     isConnectedToServer,
     commMessages,
     errorMessages,
@@ -48,6 +49,7 @@ function MultiplayerLobby() {
 
   useEffect(() => {
     inputRef.current?.focus();
+    openWSConnection();
   }, []);
 
   useEffect(() => {

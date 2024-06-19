@@ -22,6 +22,8 @@ interface WebSocketContextValue {
   gameRoomDetails: GameRoomDetails | null;
   getWinner: () => string;
   updateGameRoomDetails: (messageBody: string, code: string) => void;
+  closeWSConnection: () => void;
+  openWSConnection: () => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
@@ -91,18 +93,17 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     return newSocket;
   }
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (clientId !== null) {
+  //     setSocket(initializeWSConnection(clientId));
+  //   }
+  // }, []);
+
+  const openWSConnection = () => {
     if (clientId !== null) {
       setSocket(initializeWSConnection(clientId));
     }
-
-    return () => {
-      handleDisconnect();
-      if (socket) {
-        socket.close();
-      }
-    };
-  }, []);
+  };
 
   useEffect(() => {
     errorMessages.forEach((errorMessage) => {
@@ -142,6 +143,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     setIsConnectedToServer(false);
     sessionStorage.removeItem('clientId');
     setId(null);
+    if (socket) {
+      socket.close();
+    }
+    logInDev('Disconnected from websocket server');
   };
 
   const getWinner = (): string => {
@@ -165,7 +170,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     }));
   };
 
+  const closeWSConnection = () => {
+    handleDisconnect();
+  };
+
   const contextValue: WebSocketContextValue = {
+    openWSConnection,
     isConnectedToServer,
     sendMessage,
     errorMessages,
@@ -177,6 +187,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     getWinner,
     clientId,
     setClientId,
+    closeWSConnection,
   };
 
   return (

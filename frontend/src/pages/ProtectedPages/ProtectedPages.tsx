@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay-ts';
 
 export const ProtectedMultiplayerLobby = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const { clientId } = useWebSocketContext();
+  const { clientId, closeWSConnection } = useWebSocketContext();
   const returnToHome = useReturnTo('home');
 
   useEffect(() => {
@@ -18,10 +18,14 @@ export const ProtectedMultiplayerLobby = () => {
     const handleRedirect = async () => {
       setLoading(true);
       if (!clientId) {
-        await toast.error('Client ID not found. Redirecting to home page...', {
-          duration: 3000,
-        });
+        await toast.error(
+          'Client ID not found. Disconnecting you from server and redirecting to home page',
+          {
+            duration: 3000,
+          }
+        );
         setLoading(false);
+        closeWSConnection();
         returnToHome();
       }
     };
@@ -31,10 +35,10 @@ export const ProtectedMultiplayerLobby = () => {
 
   if (!clientId) {
     return (
-      <>
+      <div>
         <Toaster toastOptions={toastOptions} />
         {loading && <LoadingOverlay active={loading} spinner></LoadingOverlay>}
-      </>
+      </div>
     );
   }
 
@@ -67,7 +71,7 @@ export const ProtectedMultiplayerGameRoom = () => {
     };
 
     handleRedirect();
-  }, [gameRoomDetails, returnToLobby]);
+  }, [returnToLobby]);
 
   if (
     !gameRoomDetails ||
@@ -75,10 +79,10 @@ export const ProtectedMultiplayerGameRoom = () => {
     !gameRoomDetails.roomId
   ) {
     return (
-      <>
+      <div>
         <Toaster toastOptions={toastOptions} />
         {loading && <LoadingOverlay active={loading} spinner></LoadingOverlay>}
-      </>
+      </div>
     );
   }
 

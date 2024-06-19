@@ -17,7 +17,9 @@ const useReturnTo = (path: string) => {
     timerId = Number(
       setTimeout(() => {
         navigate(`/${path}`);
-        window.location.reload();
+        if (path === 'home') {
+          window.location.reload();
+        }
       }, RETURN_HOME_TIMER)
     );
   };

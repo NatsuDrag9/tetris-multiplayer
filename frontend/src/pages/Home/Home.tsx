@@ -1,8 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import './Home.scss';
+import { useWebSocketContext } from '@contexts/WebSocketContext';
+import { useEffect } from 'react';
 
 function Home() {
+  const { clientId, closeWSConnection } = useWebSocketContext();
   const navigate = useNavigate();
+  useEffect(() => {
+    // Close the connection if clientId exists and redirected to /home
+    if (clientId) {
+      closeWSConnection();
+    }
+  }, []);
+
   const handleSinglePlayerClick = () => {
     navigate('/singleplayer');
   };
