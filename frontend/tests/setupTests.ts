@@ -10,7 +10,7 @@
 import { type ReactElement } from 'react'; // Only required if using TypeScript
 import { JSDOM } from 'jsdom';
 import { render as originalRender } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { afterEach, vi } from 'vitest';
 
 // Global type declarations, can be skipped if not using TypeScript
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -64,6 +64,22 @@ const setDom = () => {
     ...global.window.navigator,
     userAgent: 'node.js',
   };
+
+  // Mock window.matchMedia
+  Object.defineProperty(global.window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
 
   // Copy all the properties of the default view (window) to global
   copyProps(window, global);
