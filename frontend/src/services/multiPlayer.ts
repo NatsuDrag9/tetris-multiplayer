@@ -1,4 +1,4 @@
-import { logErrorInDev } from '@utils/log-utils';
+import { logErrorInDev, logInTest } from '@utils/log-utils';
 import axios, { AxiosError } from 'axios';
 import ENDPOINTS from '@constants/apiEndpoints';
 import toast from 'react-hot-toast';
@@ -33,7 +33,8 @@ export const fetchClientId = async () => {
     } else {
       // An unexpected error that isn't handled by Axios (e.g., a coding error before the request)
       logErrorInDev('Unexpected error', error);
-      // toast.error('Unexpected error occurred');
+      logInTest('Error: error is not an instance of AxiosError');
+      toast.error('Unexpected error occurred');
       throw new Error('Unexpected error occurred');
     }
   }

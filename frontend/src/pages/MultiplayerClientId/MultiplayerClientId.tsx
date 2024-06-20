@@ -6,7 +6,7 @@ import LoadingOverlay from 'react-loading-overlay-ts';
 import { AxiosError } from 'axios';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { useNavigate } from 'react-router-dom';
-import { logErrorInDev, logInTest } from '@utils/log-utils';
+import { logErrorInDev } from '@utils/log-utils';
 import useReturnTo from '@hooks/useReturnTo';
 import toastOptions from '@constants/misc';
 
@@ -26,7 +26,6 @@ function MultiplayerClientId() {
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.response) {
-          logInTest('Error: ', err.response);
           // Server responded with an error status code (4xx or 5xx)
           logErrorInDev('Error generating client id: ', err);
           toast.error(

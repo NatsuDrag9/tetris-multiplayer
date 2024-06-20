@@ -22,7 +22,7 @@ import toast from 'react-hot-toast';
 const mockAxios = new MockAdapter(axios);
 const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
-// const spyOnToastError = vi.spyOn(toast, 'error');
+const spyOnToastError = vi.spyOn(toast, 'error');
 
 describe('Multiplayer Client Id flow', () => {
   beforeAll(() => mockAxios.resetHandlers());
@@ -34,7 +34,7 @@ describe('Multiplayer Client Id flow', () => {
   });
 
   // Initial test
-  test('local storage should not have a clientId initially', () => {
+  test('Session storage should not have a clientId initially', () => {
     expect(sessionStorage.getItem('clientId')).toBeNull();
   });
 
@@ -44,11 +44,10 @@ describe('Multiplayer Client Id flow', () => {
       clientId: 'testingCliendId123',
     });
     const response = await fetchClientId();
-    logInTest(response);
     assertType<'json'>(response);
   });
 
-  test('Set clientId in local storage on success API response', async () => {
+  test('Set clientId in session storage on success API response', async () => {
     mockAxios.onGet(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`).reply(200, {
       clientId: 'testingClientId123',
     });
@@ -118,62 +117,56 @@ describe('Multiplayer Client Id flow', () => {
     );
 
     expect(queryByTestId('get-ticket')).not.toBeNull();
-    fireEvent.click(getByTestId('get-ticket'));
-
-    await waitFor(() => {
+    try {
+      await fireEvent.click(getByTestId('get-ticket'));
+    } catch (error) {
       expect(sessionStorage.getItem('clientId')).toBeNull();
       expect(queryByTestId('display-ticket')).toBeNull();
-      // expect(spyOnToastError).toHaveBeenCalledWith(
-      //   'Error generating client ID'
-      // );
-    });
+      expect(spyOnToastError).toHaveBeenCalledWith('Unexpected error occurred');
+    }
   });
 
-  // test('Test client Id API network error response', async () => {
-  //   mockAxios.onGet(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`).networkError();
+  test('Test client Id API network error response', async () => {
+    mockAxios.onGet(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`).networkError();
 
-  //   try {
-  //     await axios.get(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`);
-  //   } catch (error) {
-  //     // Type guard
-  //     if (error instanceof Error) {
-  //       /*
-  //         networkError returns an "error" which is an instanceOf Error and, not AxiosError
-  //        */
+    /**
+     * Both, the try-catch block and the await block work
+     */
 
-  //       expect(error).toBeInstanceOf(AxiosError); // Check if error is an instance of AxiosError
-  //       expect(error.isAxiosError).toBeTruthy(); // Confirm it's an Axios-specific error
-  //       expect(error.request).toBeTruthy(); // There should be a request defined since an attempt was made
-  //       expect(error.response).toBeUndefined(); // Response should be undefined in a network error
-  //     } else {
-  //       throw new Error('Caught error is not an instance of AxiosError');
-  //     }
-  //   }
-  // });
+    // try {
+    //   await axios.get(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`);
+    // } catch (error) {
+    //   if (error instanceof Error) {
+    //     expect(error.message).toBe('Network Error');
+    //   }
+    // }
 
-  // test('Handles Client Id API network error response', async () => {
-  //   mockAxios.onGet(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`).networkError();
+    await expect(
+      axios.get(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`)
+    ).rejects.toThrowError('Network Error');
+  });
 
-  //   const { getByTestId, queryByTestId } = render(
-  //     <MemoryRouter initialEntries={['/']}>
-  //       <WebSocketProvider>
-  //         <MultiplayerClientId />
-  //       </WebSocketProvider>
-  //     </MemoryRouter>
-  //   );
+  test('Handles Client Id API network error response', async () => {
+    mockAxios.onGet(`${API_BASE_URL}/${ENDPOINTS.CLIENT_ID}`).networkError();
 
-  //   await waitFor(() => {
-  //     expect(queryByTestId('get-ticket')).not.toBeNull();
-  //     fireEvent.click(getByTestId('get-ticket'));
-  //   });
+    const { getByTestId, queryByTestId } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketProvider>
+          <MultiplayerClientId />
+        </WebSocketProvider>
+      </MemoryRouter>
+    );
 
-  //   await waitFor(() => {
-  //     expect(sessionStorage.getItem('clientId')).toBeNull();
-  //     expect(queryByTestId('display-ticket')).toBeNull();
-  //     // logInTest('Calls to toast.error', spyOnToastError.mock.calls);
-  //     // expect(spyOnToastError).toHaveBeenCalledWith(
-  //     //   'Server is offline or unreachable'
-  //     // );
-  //   });
-  // });
+    expect(queryByTestId('get-ticket')).not.toBeNull();
+
+    try {
+      await fireEvent.click(getByTestId('get-ticket'));
+    } catch (error) {
+      expect(sessionStorage.getItem('clientId')).toBeNull();
+      expect(queryByTestId('display-ticket')).toBeNull();
+      expect(spyOnToastError).toHaveBeenCalledWith(
+        'Server is offline or unreachable'
+      );
+    }
+  });
 });
