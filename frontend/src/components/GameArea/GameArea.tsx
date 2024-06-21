@@ -7,6 +7,7 @@ import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import SelectTetromino from '@components/SelectTetromino/SelectTetromino';
 import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import GameAreaPopup from '@components/GameArea/GameAreaPopup';
+import { CSSProperties } from 'react';
 
 interface GameAreaPropsType {
   stage: StageType;
@@ -143,6 +144,11 @@ function GameArea({
     );
   };
 
+  const customStyle = {
+    '--stageHeight': `${STAGE_HEIGHT}`,
+    '--stageWidth': `${STAGE_WIDTH}`,
+  } as CSSProperties;
+
   return (
     <div className="game-area">
       {isMultiplayer && gameOver ? (
@@ -158,10 +164,7 @@ function GameArea({
           <section
             className="game-area__game"
             // Replace this with stage.length and stage[0].length respectively later when stage is defined
-            style={{
-              '--stageHeight': `${STAGE_HEIGHT}`,
-              '--stageWidth': `${STAGE_WIDTH}`,
-            }}
+            style={customStyle}
           >
             {/* This is where tetrominoes will fall */}
             {stage.map((row) =>

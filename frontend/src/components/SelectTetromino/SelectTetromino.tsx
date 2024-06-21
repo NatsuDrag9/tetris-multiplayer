@@ -1,11 +1,10 @@
 import './SelectTetromino.scss';
-import { useEffect, useRef, useState } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 import TetrominoCell from '@components/TetrominoCell/TetrominoCell';
 import useTetrominoStage from '@hooks/useTetrominoStage';
 import {
   TETROMINO_STAGE_HEIGHT,
   TETROMINO_STAGE_WIDTH,
-  TURN_TIMER,
   TurnState,
 } from '@constants/game';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -84,18 +83,20 @@ function SelectTetromino() {
 
   useEffect(() => {
     if (turn.currentState === TurnState.SELECT_TETROMINO) {
-      timerId = setInterval(() => {
-        setTimer((prevTime) => {
-          if (prevTime <= 0) {
-            clearInterval(timerId);
-            setTimerEnded(true);
-            handleTurnStateChange(TurnState.PLAY_TURN);
-            return 0;
-          } else {
-            return prevTime - 1;
-          }
-        });
-      }, 1000);
+      timerId = Number(
+        setInterval(() => {
+          setTimer((prevTime) => {
+            if (prevTime <= 0) {
+              clearInterval(timerId);
+              setTimerEnded(true);
+              handleTurnStateChange(TurnState.PLAY_TURN);
+              return 0;
+            } else {
+              return prevTime - 1;
+            }
+          });
+        }, 1000)
+      );
 
       if (tetrominoSelected && !timerEnded) {
         setTetrmonioSelected(false);
@@ -122,6 +123,11 @@ function SelectTetromino() {
     setTimer(10);
   };
 
+  const customStyle = {
+    '--tetrominoStageHeight': `${TETROMINO_STAGE_HEIGHT}`,
+    '--tetrominoStageWidth': `${TETROMINO_STAGE_WIDTH}`,
+  } as CSSProperties;
+
   return (
     <div className="select-tetromino" ref={selectTetrominoRef}>
       <div className="stage-wrapper">
@@ -129,13 +135,7 @@ function SelectTetromino() {
           icon={faChevronLeft}
           onClick={() => switchTetromino(-1)}
         />
-        <div
-          className="stage"
-          style={{
-            '--tetrominoStageHeight': `${TETROMINO_STAGE_HEIGHT}`,
-            '--tetrominoStageWidth': `${TETROMINO_STAGE_WIDTH}`,
-          }}
-        >
+        <div className="stage" style={customStyle}>
           {tetrominoStage.map((row) =>
             row.map((cell, cellIndex) => (
               <TetrominoCell key={cellIndex} tetrominoType={cell[0]} />
@@ -155,6 +155,7 @@ function SelectTetromino() {
       <GameButton
         buttonText={'Use Tetromino'}
         onButtonClick={handleButtonClick}
+        buttonTestId="use-tetromino"
       />
     </div>
   );
