@@ -21,7 +21,7 @@ import { WebSocketMessage } from '@customTypes/gameTypes';
 import navigateToMultiplayer from '@utils/navigate-to-multiplayer';
 import wsCommStatusCheck from '@utils/ws-comm-status-check';
 import toast, { Toaster } from 'react-hot-toast';
-import LoadingOverlay from 'react-loading-overlay-ts';
+import LoadingOverlay from 'react-loading-overlay';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import wsErrorMessageHandler from '@utils/ws-error-message-handler';
 import Timer from '@components/Timer/Timer';

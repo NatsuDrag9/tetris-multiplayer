@@ -6,7 +6,7 @@ import MultiPlayerGameRoom from '@pages/MultiPlayerGameRoom/MultiPlayerGameRoom'
 import useReturnTo from '@hooks/useReturnTo';
 import { useEffect, useState } from 'react';
 import toastOptions from '@constants/misc';
-import LoadingOverlay from 'react-loading-overlay-ts';
+import LoadingOverlay from 'react-loading-overlay';
 
 export const ProtectedMultiplayerLobby = () => {
   const [loading, setLoading] = useState<boolean>(false);

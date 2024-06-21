@@ -2,7 +2,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import './MultiplayerClientId.scss';
 import { fetchClientId } from '@services/multiPlayer';
 import { useState } from 'react';
-import LoadingOverlay from 'react-loading-overlay-ts';
+import LoadingOverlay from 'react-loading-overlay';
 import { AxiosError } from 'axios';
 import { useWebSocketContext } from '@contexts/WebSocketContext';
 import { useNavigate } from 'react-router-dom';
