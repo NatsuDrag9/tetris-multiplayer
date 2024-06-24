@@ -66,7 +66,7 @@ function MultiplayerClientId() {
               className="button display__button"
               onClick={() => {
                 navigate('/multiplayer-lobby');
-                window.location.reload();
+                // window.location.reload();
               }}
               data-testid="go-to-lobby"
             >
