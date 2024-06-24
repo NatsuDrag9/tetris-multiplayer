@@ -17,6 +17,7 @@ import GameButton from '@components/GameButton/GameButton';
 import { useMultiplayerGameContext } from '@contexts/MultiplayerGameContext';
 import getRandomTetromino from '@utils/get-random-tetromino';
 import formatTime from '@utils/date-time-utils';
+import { logInDev } from '@utils/log-utils';
 
 function SelectTetromino() {
   const {
@@ -76,6 +77,16 @@ function SelectTetromino() {
     };
   }, [rotateTetromino, switchTetromino, selectedTetromino]);
 
+  const handleTimerExpiration = () => {
+    setTimerEnded(true);
+    if (!tetrominoSelected) {
+      logInDev('Time expired: selecting random tetromino');
+      setUserSelectedTetromino(getRandomTetromino().shape);
+      updatePenaltyIncurred(true);
+    }
+    handleTurnStateChange(TurnState.PLAY_TURN);
+  };
+
   useEffect(() => {
     if (turn.currentState === TurnState.SELECT_TETROMINO) {
       timerId = Number(
@@ -83,25 +94,14 @@ function SelectTetromino() {
           setTimer((prevTime) => {
             if (prevTime <= 0) {
               clearInterval(timerId);
-              setTimerEnded(true);
-              handleTurnStateChange(TurnState.PLAY_TURN);
+              handleTimerExpiration();
               return 0;
             } else {
               return prevTime - 1;
             }
           });
-        }, TURN_TIMER00)
+        }, 1000)
       );
-
-      if (tetrominoSelected && !timerEnded) {
-        setTetrmonioSelected(false);
-        updatePenaltyIncurred(false);
-        setTetrmonioSelected(false);
-      } else if (!tetrominoSelected && timerEnded) {
-        setUserSelectedTetromino(getRandomTetromino().shape);
-        updatePenaltyIncurred(true);
-        setTetrmonioSelected(false);
-      }
 
       return () => {
         clearInterval(timerId);
