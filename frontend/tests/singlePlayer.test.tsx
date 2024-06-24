@@ -10,8 +10,8 @@ import {
   KEY_CODE_RIGHT,
   KEY_CODE_UP,
 } from '@constants/game';
-import * as usePiece from '@hooks/usePiece';
 import { Tetromino } from '@customTypes/tetromonoTypes';
+import * as usePiece from '@hooks/usePiece';
 import * as useStage from '@hooks/useStage';
 
 const testTetromino: Tetromino = {
@@ -45,6 +45,7 @@ describe('Single player tests', () => {
       resetPiece: vi.fn(),
       pieceRotate: vi.fn(),
     });
+    // vi.spyOn(usePiece, 'default').mockImplementation(mockUsePiece);
 
     // Mock useStage to provide a typical stage setup
     useStage.default = vi.fn().mockReturnValue({

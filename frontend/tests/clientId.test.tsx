@@ -10,7 +10,6 @@ import {
 import { fireEvent, waitFor, cleanup } from '@testing-library/react';
 import render from './setupTests';
 import { fetchClientId } from '@services/multiPlayer';
-import { logInTest } from '@utils/log-utils';
 import MultiplayerClientId from '@pages/MultiplayerClientId/MultiplayerClientId';
 import { WebSocketProvider } from '@contexts/WebSocketContext';
 import { MemoryRouter } from 'react-router-dom';
