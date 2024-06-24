@@ -92,10 +92,12 @@ export const CommStatusCheck = {
 // Lobby timeouts
 export const RETURN_HOME_TIMER = 2000; // in ms
 export const SERVER_ACKNOWLEDGMENT_TIMEOUT = 5000; // in ms
-export const CODE_TIMEOUT = 10; // in sec
+export const CODE_TIMEOUT =
+  import.meta.env.VITE_DEV_ENV !== 'production' ? 10 : 30; // in sec
 
 // Game Room timeouts
-export const TURN_TIMER = 30; // Wait for 30 sec to make a move
+export const TURN_TIMER =
+  import.meta.env.VITE_DEV_ENV !== 'production' ? 10 : 30; // Wait for 60 sec to make a move
 
 // Multiplayer game
 export const MAX_TURNS = 5;
