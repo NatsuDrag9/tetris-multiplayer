@@ -30,6 +30,7 @@ import toastOptions from '@constants/misc';
 
 function MultiplayerLobby() {
   let homeTimerId: number = 0;
+  // let delayTimerId: number = 0;
   const [code, setCode] = useState<string>('');
   const [enteredCode, setEnteredCode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,6 +61,14 @@ function MultiplayerLobby() {
     }
     commMessages.forEach((message) => {
       if (message.messageName === CommMessage.BROADCAST_CODE) {
+        // Delay setting code for PLAYER_TWO by 250 ms to prevent instantenous rendering.
+        // Due to delay from backend and instantaneous rendering of UI,
+        // the UI section related to PLAYER_TWO couldn't detect the code
+        // delayTimerId = Number(
+        //   setTimeout(() => {
+        //     setCode(message.messageBody);
+        //   }, 250)
+        // );
         setCode(message.messageBody);
       } else {
         const navigationCheck = navigateToMultiplayer(message);
@@ -70,7 +79,6 @@ function MultiplayerLobby() {
           );
           navigate('/multiplayer');
         } else if (navigationCheck === NavigationCodes.NO) {
-          // Render a popup/message showing game room unavailable
           toast(
             ` ${message.messageBody} Please try again later! \n\n Returning to home page.`
           );
@@ -90,6 +98,7 @@ function MultiplayerLobby() {
 
     return () => {
       clearTimeout(homeTimerId);
+      // clearTimeout(delayTimerId);
     };
   }, [commMessages, errorMessages, navigate, isConnectedToServer]);
 
@@ -165,7 +174,6 @@ function MultiplayerLobby() {
   };
 
   const handleJoinGameRoom = () => {
-    logInDev(enteredCode, code);
     // Validate enteredCode
     const errorMessage = validateRoomCode(enteredCode, code);
 
