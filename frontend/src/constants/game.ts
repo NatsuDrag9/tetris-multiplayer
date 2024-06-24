@@ -100,7 +100,7 @@ export const TURN_TIMER =
   import.meta.env.VITE_DEV_ENV !== 'production' ? 10 : 30; // Wait for 60 sec to make a move
 
 // Multiplayer game
-export const MAX_TURNS = import.meta.env.VITE_DEV_ENV !== 'production' ? 10 : 5;
+export const MAX_TURNS = import.meta.env.VITE_DEV_ENV !== 'production' ? 5 : 10;
 export const INIITAL_PENALTIES = 0;
 
 // Turn state machine
