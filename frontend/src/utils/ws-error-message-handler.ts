@@ -11,6 +11,9 @@ function wsErrorMessageHandler(
   errorMessages.forEach((errorMessage) => {
     switch (errorMessage.messageName) {
       case ErrorMessage.CLIENT_TIMEOUT_ERROR:
+        toast.error(`${errorMessage.messageBody} Returning to home`);
+        nextFunction();
+        break;
       case ErrorMessage.COMM_ERROR:
         toast.error(`${errorMessage.messageBody} Returning to home`);
         nextFunction();
