@@ -41,7 +41,6 @@ async function handleCommunicationMessages(
   clientId: string
 ) {
   if (message.commStatus === CommStatus.IN_LOBBY) {
-    // All communication when
     switch (message.messageName) {
       case CommMessage.BROADCAST_CODE:
         // Add code and player name to this PLAYER_ONE ClientId record
@@ -128,16 +127,6 @@ async function handleCommunicationMessages(
                 player: PLAYER_TWO,
                 commStatus: CommStatus.IN_LOBBY,
               });
-              // ws.send(
-              //   JSON.stringify({
-              //     messageType: MessageType.COMM_MESSAGE,
-              //     messageName: CommMessage.GAME_ROOM_UNAVAILABLE,
-              //     isConnectedToServer: true,
-              //     messageBody: 'No game room available at the moment.',
-              //     player: PLAYER_TWO,
-              //     commStatus: CommStatus.IN_LOBBY,
-              //   })
-              // );
             }
           }
         }
@@ -310,9 +299,6 @@ function handleWebSocketConnections(server: Server) {
 
       try {
         const parsedMessage: WebSocketMessage = JSON.parse(message.toString());
-        // if (parsedMessage.messageType === MessageType.COMM_MESSAGE) {
-        //   handleCommunicationMessages(parsedMessage, ws, wss, clientIdCounter);
-        // }
         if (clientId !== undefined) {
           handleCommunicationMessages(parsedMessage, ws, wss, clientId);
         }
