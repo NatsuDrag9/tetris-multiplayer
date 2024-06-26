@@ -44,12 +44,14 @@ function MultiplayerGameIntro({
           <button
             className="multiplayer-lobby__button"
             onClick={() => buttonOneHandler()}
+            data-testid="lobby-generate-code"
           >
             Generate Code
           </button>
           <button
             className="multiplayer-lobby__button"
             onClick={() => buttonTwoHandler()}
+            data-testid="lobby-enter-friend-code"
           >
             Enter friend's code
           </button>
