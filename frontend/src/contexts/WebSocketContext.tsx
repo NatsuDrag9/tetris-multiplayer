@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 
-interface WebSocketContextValue {
+export interface WebSocketContextValue {
   clientId: string | null;
   setClientId: (_value: string | null) => void;
   isConnectedToServer: boolean;
