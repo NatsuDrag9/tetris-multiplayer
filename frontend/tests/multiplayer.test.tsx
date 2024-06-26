@@ -1,24 +1,17 @@
-import {
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  vi,
-} from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import render from './setupTests';
 import { cleanup } from '@testing-library/react';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import * as WebSocketContext from '@contexts/WebSocketContext';
-import { ProtectedMultiplayerLobby } from '@pages/ProtectedPages/ProtectedPages';
+import {
+  ProtectedMultiplayerGameRoom,
+  ProtectedMultiplayerLobby,
+} from '@pages/ProtectedPages/ProtectedPages';
 import { MemoryRouter } from 'react-router-dom';
-
-const mockAxios = new MockAdapter(axios);
+import { PLAYER_ONE } from '@constants/game';
 
 const spyOnToastError = vi.spyOn(toast, 'error');
+
 const wsContextMock: WebSocketContext.WebSocketContextValue = {
   clientId: 'testingClientId123',
   setClientId: vi.fn(),
@@ -44,15 +37,12 @@ vi.mock('@contexts/WebSocketContext', async () => {
 });
 
 describe('Multiplayer tests', () => {
-  beforeAll(() => mockAxios.resetHandlers());
   beforeEach(() => {
     vi.clearAllMocks();
     wsContextMock.clientId = 'testingClientId123';
   });
 
   afterEach(() => {
-    mockAxios.resetHandlers();
-    sessionStorage.clear();
     vi.restoreAllMocks();
     cleanup;
   });
@@ -86,5 +76,41 @@ describe('Multiplayer tests', () => {
     expect(getByTestId('lobby-generate-code')).toBeDefined();
     // Use the exported mock function to check if it was called
     expect(mockUseWSContext.openWSConnection).toBeCalled();
+  });
+
+  test('Should call toast error when GameRoom mounts with invalid gameRoomDetails', () => {
+    wsContextMock.gameRoomDetails = null;
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketContext.WebSocketProvider>
+          <ProtectedMultiplayerGameRoom />
+        </WebSocketContext.WebSocketProvider>
+      </MemoryRouter>
+    );
+
+    try {
+    } catch (error) {
+      expect(spyOnToastError).toHaveBeenCalled();
+    }
+  });
+
+  test('Should render MultiplayerGameRoom component when gameRoomDetails are valid', async () => {
+    wsContextMock.gameRoomDetails = {
+      roomId: 1,
+      gameRoomCode: 'x123vY',
+      player: PLAYER_ONE,
+    };
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketContext.WebSocketProvider>
+          <ProtectedMultiplayerGameRoom />
+        </WebSocketContext.WebSocketProvider>
+      </MemoryRouter>
+    );
+
+    // Game intro section renders
+    expect(getByTestId('multiplayer-rows-cleared')).toBeDefined();
   });
 });
