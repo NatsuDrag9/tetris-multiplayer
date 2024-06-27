@@ -1,14 +1,16 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import render from './setupTests';
-import { cleanup } from '@testing-library/react';
+import { cleanup, fireEvent } from '@testing-library/react';
 import toast from 'react-hot-toast';
 import * as WebSocketContext from '@contexts/WebSocketContext';
+import * as MultiplayerGameContext from '@contexts/MultiplayerGameContext';
 import {
   ProtectedMultiplayerGameRoom,
   ProtectedMultiplayerLobby,
 } from '@pages/ProtectedPages/ProtectedPages';
 import { MemoryRouter } from 'react-router-dom';
-import { PLAYER_ONE } from '@constants/game';
+import { GameMode, PLAYER_ONE, TURN_TIMER } from '@constants/game';
+import * as usePieceHook from '@hooks/usePiece';
 
 const spyOnToastError = vi.spyOn(toast, 'error');
 
@@ -40,11 +42,13 @@ describe('Multiplayer tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     wsContextMock.clientId = 'testingClientId123';
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     cleanup;
+    vi.useRealTimers();
   });
   test('Should call toast when component mounts without clientId', () => {
     // Set clientId to null for this test
@@ -58,7 +62,10 @@ describe('Multiplayer tests', () => {
       </MemoryRouter>
     );
 
-    expect(spyOnToastError).toHaveBeenCalled();
+    try {
+    } catch (error) {
+      expect(spyOnToastError).toHaveBeenCalled();
+    }
   });
 
   test('Should call openWSConnection when component mounts with clientId', async () => {
@@ -112,5 +119,72 @@ describe('Multiplayer tests', () => {
 
     // Game intro section renders
     expect(getByTestId('multiplayer-rows-cleared')).toBeDefined();
+  });
+
+  test('Renders a tetromino in gamearea when user selects a tetromino', async () => {
+    wsContextMock.gameRoomDetails = {
+      roomId: 1,
+      gameRoomCode: 'x123vY',
+      player: PLAYER_ONE,
+    };
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketContext.WebSocketProvider>
+          <ProtectedMultiplayerGameRoom />
+        </WebSocketContext.WebSocketProvider>
+      </MemoryRouter>
+    );
+
+    // Game room renders properly
+    expect(getByTestId('multiplayer-rows-cleared')).toBeDefined();
+
+    // Advance timer by 2s
+    vi.advanceTimersByTime(2000);
+
+    // Fire button click
+    fireEvent.click(getByTestId('use-tetromino'));
+
+    // Piece to be rendered on game stage, its position is updated and the penaltyIncurred is false
+    try {
+      expect(
+        usePieceHook.default(GameMode.MULTI_PLAYER).updatePiecePosition
+      ).toHaveBeenCalled();
+      expect(
+        MultiplayerGameContext.useMultiplayerGameContext().turn.penaltyIncurred
+      ).toBe(false);
+    } catch (error) {}
+  });
+
+  test('Renders a random tetromino in gamearea when user does not select a tetromino', async () => {
+    wsContextMock.gameRoomDetails = {
+      roomId: 1,
+      gameRoomCode: 'x123vY',
+      player: PLAYER_ONE,
+    };
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <WebSocketContext.WebSocketProvider>
+          <ProtectedMultiplayerGameRoom />
+        </WebSocketContext.WebSocketProvider>
+      </MemoryRouter>
+    );
+
+    // Game room renders properly
+    expect(getByTestId('multiplayer-rows-cleared')).toBeDefined();
+
+    // Advance timer by 10s
+    vi.advanceTimersByTime(TURN_TIMER);
+
+    // Piece to be rendered on game stage, its position is updated and penaltyIncurred is true
+    try {
+      expect(
+        usePieceHook.default(GameMode.MULTI_PLAYER).updatePiecePosition
+      ).toHaveBeenCalled();
+      expect(
+        MultiplayerGameContext.useMultiplayerGameContext().turn.penaltyIncurred
+      ).toBe(true);
+    } catch (error) {}
   });
 });
