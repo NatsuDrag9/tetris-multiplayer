@@ -11,9 +11,10 @@ Tetris Multiplayer is a fullstack web application that allows users to play the 
 
 - Clone the repository `https://github.com/NatsuDrag9/tetris-multiplayer.git`
 - Open a terminal and navigate to the frontend dir `cd frontend`
-- Create a `.env` file in `frontend` with the following environment variables:
-  - `VITE_WEB_SOCKET_URL="ws://localhost:3000"`
-  - `VITE_BASE_URL="http://localhost:3000"`
+- Create a ```.env``` file in ```frontend``` with the following environment variables:
+  - ```VITE_DEV_ENV=development```
+  - ```VITE_WEB_SOCKET_URL="ws://localhost:3000"```
+  - ```VITE_BASE_URL="http://localhost:3000"```
 - Open another terminal and navigate to the backend dir `cd backend`
 - Start the server by executing `yarn run dev` in both terminals
 
