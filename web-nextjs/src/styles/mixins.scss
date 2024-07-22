@@ -1,0 +1,36 @@
+@import '@styles/main.scss';
+
+@mixin game-layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin multiplayer-layout {
+  width: 70vw;
+  height: 80%;
+  border: 4px solid $theme-border-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin multiplayer-button {
+  border: 2px solid $theme-border-color;
+  transition: none;
+  color: antiquewhite;
+  font-size: 1.1vw;
+  transition: 0.1s ease-out;
+
+  &:hover {
+    transform: scale(1.05);
+    transition: 0.1s ease-in;
+  }
+
+  @media (max-width: $screen-width-800) {
+    width: 30vw;
+  }
+}

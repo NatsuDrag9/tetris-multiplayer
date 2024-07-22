@@ -1,0 +1,19 @@
+/* Roboto - for regular text */
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
+/*  Poppins - for heading */
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+
+/* Arcade game fonts */
+@font-face {
+  font-family: 'PressStart2P';
+  src: url('../fonts/home-fonts/PressStart2P-vaV7.ttf');
+}
+
+@font-face {
+  font-family: 'Emulogic';
+  src: url('../fonts/gameplay-fonts/Emulogic-zrEw.ttf');
+}
