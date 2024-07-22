@@ -1,0 +1,82 @@
+@import '@styles/main.scss';
+@import '@styles/mixins.scss';
+
+.select-tetromino {
+  width: 100%;
+  height: 50%;
+  border: 0.3vw solid $theme-border-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 1vw;
+
+  .stage-wrapper {
+    width: 100%;
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // border: 1px solid white;
+    .stage {
+      width: 70%;
+      height: 100%;
+      display: grid;
+      margin: 0 1vw;
+      grid-template-rows: repeat(
+        var(--tetrominoStageHeight),
+        calc(100% / var(--tetrominoStageWidth))
+      );
+      grid-template-columns: repeat(var(--tetrominoStageWidth), 1fr);
+      // border: 1px solid red;
+
+      @media (max-width: $screen-width-800) {
+        margin: 0 2vw;
+      }
+    }
+
+    .svg-inline--fa {
+      font-size: 1.5vw;
+      transition: transform 0.3s ease-in-out;
+      cursor: pointer;
+
+      @media (max-width: $screen-width-800) {
+        font-size: 2.5vw;
+      }
+    }
+    .svg-inline--fa:hover {
+      transform: scale(1.1);
+      @media (max-width: $screen-width-800) {
+        transform: scale(1.3);
+      }
+    }
+  }
+
+  .timer-container {
+    width: 100%;
+    height: 15%;
+    // border: 1px solid green;
+    display: flex;
+    align-items: center;
+
+    .timer {
+      height: 50%;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  .game-button {
+    padding: 1vw;
+    font-size: 0.7vw;
+    margin: 0.5vw 0;
+  }
+
+  @media (max-width: $screen-width-800) {
+    width: 35vw;
+    height: 70%;
+
+    .game-button {
+      width: 35vw;
+    }
+  }
+}

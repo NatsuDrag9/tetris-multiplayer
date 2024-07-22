@@ -1,0 +1,15 @@
+@import '@styles/font.css';
+
+$font-family-intro: 'PressStart2P';
+$font-family-game: 'Emulogic';
+
+$theme-border-color: #333333;
+
+/* Setting vw: 1vw = 12.8 px ~ 13 px */
+$px-13: 1vw;
+
+/* Media query break points */
+$screen-width-1400: 1400px;
+$screen-width-1280: 1280px;
+$screen-width-800: 820px;
+$screen-width-450: 450px;
