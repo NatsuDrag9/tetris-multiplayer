@@ -1,14 +1,14 @@
-import { GameMessage, MessageType } from "@constants/game";
-import { GameRoomDetails, WebSocketMessage } from "@customTypes/gameTypes";
-import getNumberAfterColon from "@utils/get-number-after-colon";
-import { logErrorInDev, logInDev } from "@utils/log-utils";
+import { GameMessage, MessageType } from '@constants/game';
+import { GameRoomDetails, WebSocketMessage } from '@customTypes/gameTypes';
+import getNumberAfterColon from '@utils/get-number-after-colon';
+import { logErrorInDev, logInDev } from '@utils/log-utils';
 import {
   ReactNode,
   createContext,
   useContext,
   useEffect,
   useState,
-} from "react";
+} from 'react';
 
 export interface WebSocketContextValue {
   clientId: string | null;
@@ -28,7 +28,7 @@ export interface WebSocketContextValue {
 
 export const webSocketBaseUrl = process.env.NEXT_PUBLIC_WEB_SOCKET_URL
   ? process.env.NEXT_PUBLIC_WEB_SOCKET_URL
-  : "";
+  : '';
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
 
@@ -36,7 +36,7 @@ export const useWebSocketContext = (): WebSocketContextValue => {
   const context = useContext(WebSocketContext);
   if (!context) {
     throw new Error(
-      "useWebSocketContext must be used within a WebSocketProvider"
+      'useWebSocketContext must be used within a WebSocketProvider'
     );
   }
   return context;
@@ -50,8 +50,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   children,
 }) => {
   const [clientId, setId] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("clientId");
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('clientId');
     }
     return null;
   });
@@ -68,7 +68,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     const newSocket = new WebSocket(webSocketBaseUrl, receivedClientId);
     newSocket.onopen = () => {
       setIsConnectedToServer(true);
-      logInDev("Connected to WebSocket server");
+      logInDev('Connected to WebSocket server');
     };
 
     newSocket.onmessage = (event) => {
@@ -83,12 +83,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
           setErrorMessages((prevMessages) => [...prevMessages, newMessage]);
         }
       } catch (error) {
-        logErrorInDev("Error parsing WebSocket message:", error);
+        logErrorInDev('Error parsing WebSocket message:', error);
       }
     };
 
     newSocket.onerror = (error) => {
-      logErrorInDev("WebSocket error:", error);
+      logErrorInDev('WebSocket error:', error);
     };
 
     return newSocket;
@@ -118,12 +118,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
   const setClientId = (value: string | null) => {
     setId(value);
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       if (value === null) {
-        sessionStorage.removeItem("clientId");
+        sessionStorage.removeItem('clientId');
         setId(null);
       } else {
-        sessionStorage.setItem("clientId", value);
+        sessionStorage.setItem('clientId', value);
       }
     }
   };
@@ -137,19 +137,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   const setCurrentPlayer = (playerName: string) => {
     setGameRoomDetails({
       roomId: 0,
-      gameRoomCode: "",
+      gameRoomCode: '',
       player: playerName,
     });
   };
 
   const handleDisconnect = () => {
     setIsConnectedToServer(false);
-    sessionStorage.removeItem("clientId");
+    sessionStorage.removeItem('clientId');
     setId(null);
     if (socket) {
       socket.close();
     }
-    logInDev("Disconnected from websocket server");
+    logInDev('Disconnected from websocket server');
   };
 
   const getWinner = (): string => {
@@ -157,19 +157,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       (message) => message.messageName === GameMessage.WINNER
     );
     // Body of this message type contains winner name
-    return index !== -1 ? gameMessages[index].messageBody : "Please wait...";
+    return index !== -1 ? gameMessages[index].messageBody : 'Please wait...';
   };
 
   const updateGameRoomDetails = (messageBody: string, code: string) => {
     const roomId = getNumberAfterColon(messageBody);
     if (roomId === null) {
-      logErrorInDev("Room id is null. Check Server.", roomId);
+      logErrorInDev('Room id is null. Check Server.', roomId);
       return;
     }
     setGameRoomDetails((prevValue: GameRoomDetails | null) => ({
       roomId: roomId,
       gameRoomCode: code,
-      player: prevValue !== null ? prevValue.player : "",
+      player: prevValue !== null ? prevValue.player : '',
     }));
   };
 
