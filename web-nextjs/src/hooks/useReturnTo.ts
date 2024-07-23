@@ -1,10 +1,10 @@
-import { RETURN_HOME_TIMER } from '@constants/game';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { RETURN_HOME_TIMER } from "@constants/game";
+import { useEffect } from "react";
+// import { useNavigate } from 'react-router-dom';
 
 const useReturnTo = (path: string) => {
   let timerId: number = 0;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(
     () => () => {
@@ -16,8 +16,8 @@ const useReturnTo = (path: string) => {
   const returnTo = () => {
     timerId = Number(
       setTimeout(() => {
-        navigate(`/${path}`);
-        if (path === 'home') {
+        // navigate(`/${path}`);
+        if (path === "home") {
           window.location.reload();
         }
       }, RETURN_HOME_TIMER)

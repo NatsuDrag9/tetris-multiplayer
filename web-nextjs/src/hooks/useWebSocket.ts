@@ -1,14 +1,15 @@
-import { WebSocketMessage } from '@customTypes/gameTypes';
-import { logErrorInDev, logInDev } from '@utils/log-utils';
-import { useState, useEffect } from 'react';
+import { webSocketBaseUrl } from "@/contexts/WebSocketContext";
+import { WebSocketMessage } from "@customTypes/gameTypes";
+import { logErrorInDev, logInDev } from "@utils/log-utils";
+import { useState, useEffect } from "react";
 
 function useWebSocket() {
-  const serverUrl = import.meta.env.VITE_WEB_SOCKET_URL;
+  const serverUrl = webSocketBaseUrl;
   const [messages, setMessages] = useState<WebSocketMessage[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   const onOpen = () => {
-    logInDev('Connected to WebSocket server');
+    logInDev("Connected to WebSocket server");
   };
 
   const onMessage = (event: MessageEvent) => {
@@ -16,12 +17,12 @@ function useWebSocket() {
       const newMessage: WebSocketMessage = JSON.parse(event.data);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     } catch (error) {
-      logErrorInDev('Error parsing WebSocket message:', error);
+      logErrorInDev("Error parsing WebSocket message:", error);
     }
   };
 
   const onError = (error: Event) => {
-    logErrorInDev('WebSocket error:', error);
+    logErrorInDev("WebSocket error:", error);
   };
 
   useEffect(() => {

@@ -25,6 +25,7 @@ const Timer = ({ timerValue, onTimerEnd }: TimerProps) => {
     }, 1000);
 
     return () => clearInterval(timerId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <h3 className="timer">{formatTime(time)}</h3>;

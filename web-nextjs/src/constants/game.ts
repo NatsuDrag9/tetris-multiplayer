@@ -1,7 +1,7 @@
 // Game mode
 export const GameMode = {
-  SINGLE_PLAYER: 'SINGLE_PLAYER',
-  MULTI_PLAYER: 'MULTI_PLAYER',
+  SINGLE_PLAYER: "SINGLE_PLAYER",
+  MULTI_PLAYER: "MULTI_PLAYER",
 };
 
 // Stage
@@ -11,8 +11,8 @@ export const STAGE_HEIGHT = 20;
 export const TETROMINO_STAGE_WIDTH = 4;
 export const TETROMINO_STAGE_HEIGHT = 4;
 
-export const CLEAR_CELL = 'CLEAR';
-export const MERGE_CELL = 'MERGED';
+export const CLEAR_CELL = "CLEAR";
+export const MERGE_CELL = "MERGED";
 
 export const INITIAL_ROWS_CLEARED = 0;
 export const INITIAL_SCORE = 0;
@@ -33,46 +33,46 @@ export const LINE_POINTS = [40, 100, 300, 1200];
 
 // Communication constants
 export const CommStatus = {
-  IN_GAME_ROOM: 'IN_GAME_ROOM',
-  IN_LOBBY: 'IN_LOBBY',
+  IN_GAME_ROOM: "IN_GAME_ROOM",
+  IN_LOBBY: "IN_LOBBY",
 };
 
 export const MessageType = {
-  COMM_MESSAGE: 'COMMUNICATION_MESSAGE',
-  GAME_MESSAGE: 'GAME_MESSAGE',
-  ERROR_MESSAGE: 'ERROR_MESSAGE',
+  COMM_MESSAGE: "COMMUNICATION_MESSAGE",
+  GAME_MESSAGE: "GAME_MESSAGE",
+  ERROR_MESSAGE: "ERROR_MESSAGE",
 };
 
 export const CommMessage = {
   // Client message types
-  WAITING_FOR_CODE: 'WAITING_FOR_CODE', // Only sent by PLAYER_TWO
-  BROADCAST_CODE: 'BROADCAST_CODE', // Only sent by PLAYER_ONE
-  READY_TO_JOIN_GAME_ROOM: 'READY_TO_JOIN_GAME_ROOM', // Only sent by PLAYER_TWO
-  JOINED_GAME_ROOM: 'JOINED_GAME_ROOM',
+  WAITING_FOR_CODE: "WAITING_FOR_CODE", // Only sent by PLAYER_TWO
+  BROADCAST_CODE: "BROADCAST_CODE", // Only sent by PLAYER_ONE
+  READY_TO_JOIN_GAME_ROOM: "READY_TO_JOIN_GAME_ROOM", // Only sent by PLAYER_TWO
+  JOINED_GAME_ROOM: "JOINED_GAME_ROOM",
 
   // Message types common to server and client
-  DISCONNECTED: 'DISCONNECTED',
+  DISCONNECTED: "DISCONNECTED",
 
   // Server message types
-  READY_TO_SERVE: 'READY_TO_SERVE', // Server sends when a new client connects
-  GAME_ROOM_ASSIGNED: 'GAME_ROOM_ASSIGNED',
-  GAME_ROOM_UNAVAILABLE: 'GAME_ROOM_UNAVAILABLE',
+  READY_TO_SERVE: "READY_TO_SERVE", // Server sends when a new client connects
+  GAME_ROOM_ASSIGNED: "GAME_ROOM_ASSIGNED",
+  GAME_ROOM_UNAVAILABLE: "GAME_ROOM_UNAVAILABLE",
 };
 export const GameMessage = {
-  TURN_INFO: 'TURN_INFO',
-  GAME_OVER: 'GAME_OVER',
-  PLAY_GAME: 'PLAY_GAME', // Server sends to the client who entered game room
-  WINNER: 'WINNER',
-  WAITING_PLAYER: 'WAITING_PLAYER',
+  TURN_INFO: "TURN_INFO",
+  GAME_OVER: "GAME_OVER",
+  PLAY_GAME: "PLAY_GAME", // Server sends to the client who entered game room
+  WINNER: "WINNER",
+  WAITING_PLAYER: "WAITING_PLAYER",
 };
 export const ErrorMessage = {
-  CLIENT_TIMEOUT_ERROR: 'CLIENT_TIMEOUT_ERROR',
-  COMM_ERROR: 'COMMUNICATION_ERROR',
+  CLIENT_TIMEOUT_ERROR: "CLIENT_TIMEOUT_ERROR",
+  COMM_ERROR: "COMMUNICATION_ERROR",
 };
 
-export const PLAYER_ONE = 'PLAYER_ONE';
-export const PLAYER_TWO = 'PLAYER_TWO';
-export const NO_PLAYER = '';
+export const PLAYER_ONE = "PLAYER_ONE";
+export const PLAYER_TWO = "PLAYER_TWO";
+export const NO_PLAYER = "";
 
 export const NavigationCodes = {
   YES: 1,
@@ -92,15 +92,13 @@ export const CommStatusCheck = {
 // Lobby timeouts
 export const RETURN_HOME_TIMER = 2000; // in ms
 export const SERVER_ACKNOWLEDGMENT_TIMEOUT = 5000; // in ms
-export const CODE_TIMEOUT =
-  import.meta.env.VITE_DEV_ENV !== 'production' ? 10 : 30; // in sec
+export const CODE_TIMEOUT = process.env.NODE_ENV !== "production" ? 10 : 30; // in sec
 
 // Game Room timeouts
-export const TURN_TIMER =
-  import.meta.env.VITE_DEV_ENV !== 'production' ? 10 : 30; // Wait for 60 sec to make a move
+export const TURN_TIMER = process.env.NODE_ENV !== "production" ? 10 : 30; // Wait for 60 sec to make a move
 
 // Multiplayer game
-export const MAX_TURNS = import.meta.env.VITE_DEV_ENV !== 'production' ? 5 : 10;
+export const MAX_TURNS = process.env.NODE_ENV !== "production" ? 5 : 10;
 export const INIITAL_PENALTIES = 0;
 
 // Turn state machine

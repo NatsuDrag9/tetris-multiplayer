@@ -1,7 +1,7 @@
-import { CommStatus, GameMessage, MessageType } from '@constants/game';
-import { useWebSocketContext } from '@contexts/WebSocketContext';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { CommStatus, GameMessage, MessageType } from "@constants/game";
+import { useWebSocketContext } from "@contexts/WebSocketContext";
+import { useEffect, useState } from "react";
+// import { useNavigate } from 'react-router-dom';
 
 interface GameAreaPopupProps {
   rows: number;
@@ -10,9 +10,9 @@ interface GameAreaPopupProps {
 }
 
 function GameAreaPopup({ rows, penalties, score }: GameAreaPopupProps) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { gameRoomDetails, sendMessage, gameMessages } = useWebSocketContext();
-  const [displayMessage, setDisplayMessage] = useState('');
+  const [displayMessage, setDisplayMessage] = useState("");
 
   useEffect(() => {
     if (gameRoomDetails !== null) {
@@ -26,16 +26,18 @@ function GameAreaPopup({ rows, penalties, score }: GameAreaPopupProps) {
       });
     }
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         returnToHome();
       }
     };
 
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener("keydown", handleKeyPress);
     };
+    // Disabled rule as no dependency is required here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ function GameAreaPopup({ rows, penalties, score }: GameAreaPopupProps) {
 
   const returnToHome = () => {
     window.location.reload();
-    navigate('/home');
+    // navigate('/home');
   };
 
   return (
