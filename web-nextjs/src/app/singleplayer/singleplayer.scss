@@ -1,0 +1,22 @@
+@import '@styles/main.scss';
+@import '@styles/mixins.scss';
+
+.single-player {
+  @include game-layout;
+
+  .game-area-wrapper {
+    transition: none;
+    background-color: transparent;
+    width: 62vw;
+    height: 72%; // To match the no. of rows in &__game;
+    margin: 0;
+    // border: 1px solid white;
+    border: none;
+    cursor: default;
+
+    @media (max-width: $screen-width-800) {
+      width: 95%;
+      height: 90%;
+    }
+  }
+}
