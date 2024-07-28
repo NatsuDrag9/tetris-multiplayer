@@ -8,6 +8,13 @@
   align-items: center;
 }
 
+@mixin game-button {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+
 @mixin multiplayer-layout {
   width: 70vw;
   height: 80%;
@@ -20,7 +27,6 @@
 
 @mixin multiplayer-button {
   border: 2px solid $theme-border-color;
-  transition: none;
   color: antiquewhite;
   font-size: 1.1vw;
   transition: 0.1s ease-out;
