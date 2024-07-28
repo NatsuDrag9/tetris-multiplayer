@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" type="image/svg+xml" href="/tetris.svg" />
+        <link rel="icon" type="image/svg+xml" href="./tetris.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tetris Multiplayer</title>
       </head>
